@@ -26,6 +26,10 @@ export function Home() {
 
     setFormStep('user')
   }
+
+  function handleFinish() {
+    
+  }
   
   return (
     <Section>

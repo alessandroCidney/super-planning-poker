@@ -6,7 +6,7 @@ import 'dotenv/config'
 
 import { startMongoose } from './db/conn'
 
-import { roomRoutes } from './routes/roomRoutes'
+import { roomRoutes, setupRoomEvents } from './routes/roomRoutes'
 
 const app = express()
 
@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 app.use('/rooms', roomRoutes)
 
 io.on('connection', (socket) => {
-  console.log('test', socket)
+  setupRoomEvents(socket)
 })
 
 startMongoose()

@@ -2,15 +2,10 @@ import { mongoose } from '../db/conn'
 
 const { Schema } = mongoose
 
-export const userSchema = new Schema(
+export const storySchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
-    },
-
-    owner: {
-      type: Boolean,
       required: true,
     },
   },
@@ -19,7 +14,7 @@ export const userSchema = new Schema(
   },
 )
 
-export const User = mongoose.model(
-  'User',
-  userSchema,
+export const Story = mongoose.model(
+  'Story',
+  storySchema,
 )
