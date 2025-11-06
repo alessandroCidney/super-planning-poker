@@ -1,7 +1,7 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose'
 
 async function startMongoose() {
-  await mongoose.connect('mongodb://localhost:27017/...')
+  await mongoose.connect(`mongodb://${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`)
 }
 
-export { mongoose }
+export { startMongoose, mongoose }

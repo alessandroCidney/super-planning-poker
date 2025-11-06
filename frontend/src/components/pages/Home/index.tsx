@@ -1,74 +1,97 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
+
+import { io, Socket } from 'socket.io-client'
+
+import { Section, Form, FloatingH1, FormField, FieldTitle, FieldInput, FormButton, FormBreak } from './styles'
 
 export function Home() {
-  const [socket, setSocket] = useState<WebSocket>()
+  const [socket, setSocket] = useState<Socket>()
 
-  const [messages, setMessages] = useState<string[]>([])
+  const [enterRoomPayload, setEnterRoomPayload] = useState({
+    code: '',
+    username: '',
+  })
   
-  function startConnection() {
-    const ws = new WebSocket('ws://localhost:8080/test')
+  const [formStep, setFormStep] = useState<'room' | 'user'>('room')
 
-    ws.addEventListener('open', (event) => {
-      console.log('connection open', event)
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setEnterRoomPayload({
+      ...enterRoomPayload,
+      [event.target.name]: event.target.value,
     })
-
-    ws.addEventListener('message', (event) => {
-      setMessages([
-        ...messages,
-        event.data,
-      ])
-    })
-
-    setSocket(ws)
   }
 
-  function RenderWebSocketStatus() {
-    if (socket) {
-      if (socket.readyState === WebSocket.OPEN) {
-        return (
-          <span>
-            OPEN
-          </span>
-        )
-      }
+  function handleNextStep(event: React.SyntheticEvent) {
+    event.preventDefault()
 
-      if (socket.readyState === WebSocket.CLOSED) {
-        return (
-          <span>
-            CLOSED
-          </span>
-        )
-      }
-    }
+    setFormStep('user')
   }
   
   return (
-    <div>
-      <div>
-        <button onClick={startConnection}>
-          Iniciar conexão
-        </button>
-      </div>
+    <Section>
+      <FloatingH1>
+        Home
+      </FloatingH1>
 
-      <div>
-        Status: <RenderWebSocketStatus />
-      </div>
+      {
+        formStep === 'room'
+          ? (
+            <Form onSubmit={handleNextStep}>
+              <h2>
+                Entre em uma sala
+              </h2>
 
-      <div>
-        <div>
-          Mensagens
-        </div>
+              <FormField>
+                <FieldTitle>
+                  Informe o código da sala em que deseja entrar:
+                </FieldTitle>
 
-        <div>
-          {
-            messages.map((messageStr, messageStrIndex) => (
-              <div key={messageStrIndex}>
-                { messageStr }
-              </div>
-            ))
-          }
-        </div>
-      </div>
-    </div>
+                <FieldInput
+                  name='code'
+                  type='text'
+                  placeholder='XXXXXX'
+                  onChange={handleInputChange}
+                />
+
+                <FormButton>
+                  Entrar
+                </FormButton>
+              </FormField>
+
+              <FormBreak>
+                ou
+              </FormBreak>
+
+              <FormButton>
+                Crie uma nova
+              </FormButton>
+            </Form>
+          )
+          : (
+            <Form>
+              <h2>
+                Escolha seu nome
+              </h2>
+
+              <FormField>
+                <FieldTitle>
+                  Como deseja ser chamado?
+                </FieldTitle>
+
+                <FieldInput
+                  name='username'
+                  type='text'
+                  placeholder='Potato Chips'
+                  onChange={handleInputChange}
+                />
+
+                <FormButton>
+                  Continuar
+                </FormButton>
+              </FormField>
+            </Form>
+          )
+      }
+    </Section>
   )
 }

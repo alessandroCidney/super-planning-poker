@@ -1,11 +1,26 @@
-import express from "express"
-import expressWs from 'express-ws'
-import { v4 as uuidV4 } from 'uuid'
+import express from 'express'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
+import cors from 'cors'
 import 'dotenv/config'
 
-const expressApp = express()
+import { startMongoose } from './db/conn'
 
-const { app } = expressWs(expressApp)
+import { roomRoutes } from './routes/roomRoutes'
+
+const app = express()
+
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+const httpServer = createServer(app)
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: ['http://localhost:3000'],
+  },
+})
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -13,45 +28,18 @@ app.get('/', (req, res) => {
   })
 })
 
-app.ws('/test', (ws, req) => {
+app.use('/rooms', roomRoutes)
 
-const fakeDatabase: string[] = []
-  function simulateDatabaseRemove(id: string) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const itemIndex = fakeDatabase.findIndex(itemStr => itemStr === id)
+io.on('connection', (socket) => {
+  console.log('test', socket)
+})
 
-        fakeDatabase.splice(itemIndex, 1)
-      }, 3000)
+startMongoose()
+  .then(() => {
+    httpServer.listen(process.env.PORT, () => {
+      console.log(`Listening at port ${process.env.PORT}`)
     })
-  }
-
-  const newUuid = uuidV4()
-
-  fakeDatabase.push(newUuid)
-
-  console.log('new user', newUuid)
-  console.log('fake', fakeDatabase)
-
-  ws.send(newUuid)
-
-  ws.on('message', (data) => {
-    console.log('message', data)
   })
-
-  ws.on('close', async () => {
-    await simulateDatabaseRemove(newUuid)
-
-    console.log('closed')
+  .catch((err) => {
+    console.error('Error establishing a connection to the database.', err)
   })
-
-  ws.on('error', (err) => {
-    console.error('error', err)
-  })
-
-  console.log('ws started')
-})
-
-app.listen(process.env.PORT, () => {
-  console.log(`Listening at port ${process.env.PORT}`)
-})
