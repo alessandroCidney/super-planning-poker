@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 
 import { api } from '../../../utils/api'
 
+import { AppButton } from '../../commons/AppButton'
+
 import { StyledMain, Form, FloatingH1, FormField, FieldTitle, FieldInput, FormButton, FormBreak } from './styles'
 
 export function Home() {
@@ -32,6 +34,7 @@ export function Home() {
           {
             name: enterRoomPayload.name,
             owner: true,
+            online: false,
           },
         ],
       }
@@ -88,9 +91,9 @@ export function Home() {
                 ou
               </FormBreak>
 
-              <FormButton>
+              <AppButton>
                 Crie uma nova
-              </FormButton>
+              </AppButton>
             </Form>
           )
           : (
@@ -111,9 +114,9 @@ export function Home() {
                   onChange={handleInputChange}
                 />
 
-                <FormButton>
+                <AppButton>
                   Continuar
-                </FormButton>
+                </AppButton>
               </FormField>
             </Form>
           )

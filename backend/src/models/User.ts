@@ -13,6 +13,11 @@ export const userSchema = new Schema(
       type: Boolean,
       required: true,
     },
+
+    online: {
+      type: Boolean,
+      required: true,
+    },
   },
   {
     timestamps: true,

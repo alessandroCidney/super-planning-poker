@@ -21,8 +21,12 @@ export const StyledAside = styled.aside`
 
   background-color: #f5f5f5;
 
-  h2 {
+  header {
     margin-bottom: 20px;
+
+    h2 {
+      margin-bottom: 20px;
+    }
   }
 `
 
@@ -31,7 +35,7 @@ export const StyledCard = styled.article`
   
   background-color: #fff;
 
-  border-radius: 16px;
+  border-radius: 8px;
 
   header {
     margin-bottom: 10px;

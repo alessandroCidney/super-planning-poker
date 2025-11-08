@@ -6,6 +6,11 @@ const { Schema } = mongoose
 
 export const roomSchema = new Schema(
   {
+    ownerId: {
+      type: String,
+      required: true,
+    },
+
     users: [userSchema],
     stories: [storySchema],
   },

@@ -1,3 +1,4 @@
+import { AppButton } from '../../commons/AppButton'
 import { StyledAside, StyledMain, StyledSection, StyledCard } from './styles'
 
 export function Room() {
@@ -15,9 +16,16 @@ export function Room() {
       </StyledSection>
 
       <StyledAside>
-        <h2>
-          Fila de USs
-        </h2>
+        <header>
+          <h2>
+            Fila de USs
+          </h2>
+
+          <AppButton
+          >
+            Criar nova
+          </AppButton>
+        </header>
 
         <div>
           {

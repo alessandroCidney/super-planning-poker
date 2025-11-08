@@ -12,7 +12,7 @@ export class RoomController {
         throw new Error('Invalid users length')
       }
 
-      if (!users[0].owner) {
+      if (!users[0]) {
         throw new Error('First user should be an owner')
       }
 
