@@ -16,7 +16,7 @@ export class RoomController {
     this.socket = socket
   }
 
-  async createRoom() {
+  createRoom() {
     console.log('createRoom', this.socket.id)
 
     const room = new Room()
@@ -27,30 +27,33 @@ export class RoomController {
 
     this.joinRoom(room._id, { name: 'Sem Nome' })
 
-    this.io.to(room._id).emit('room:created', room)
+    return room
   }
 
-  async joinRoom(roomId: string, userData: Partial<User>) {
+  joinRoom(roomId: string, userData: Partial<User>) {
     console.log('joinRoom')
+    console.log('roomBefore', onlineRooms[roomId])
 
     const user = new User(userData.name, this.socket.id)
 
     this.socket.join(roomId)
 
-    onlineRooms[roomId].users.push(user)
+    onlineRooms[roomId].users[user._id] = user
 
     this.io.to(roomId).emit('room:updated', onlineRooms[roomId])
+    console.log('roomAfter', onlineRooms[roomId])
+
+    return onlineRooms[roomId]
   }
 
-  async leaveRoom(roomId: string) {
+  leaveRoom(roomId: string) {
     console.log('leaveRoom')
 
-    const onlineUsers = onlineRooms[roomId].users
+    delete onlineRooms[roomId].users[this.socket.id]
 
-    const userIndex = onlineUsers.findIndex(userData => userData._id === this.socket.id)
-    onlineUsers.splice(userIndex, 1)
+    console.log('removing user', this.socket.id, 'from', roomId)
 
-    if (onlineUsers.length > 0) {
+    if (Object.keys(onlineRooms[roomId].users).length > 0) {
       this.io.to(roomId).emit('room:updated', onlineRooms[roomId])
     }
   }
