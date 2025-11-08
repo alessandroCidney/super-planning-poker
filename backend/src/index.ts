@@ -5,6 +5,7 @@ import cors from 'cors'
 import 'dotenv/config'
 
 import { setupRoomEvents } from './handlers/roomHandler'
+import { onlineRooms } from './controllers/RoomController'
 
 const app = express()
 
@@ -28,11 +29,13 @@ app.get('/', (req, res) => {
 
 app.get('/rooms', (req, res) => {
   res.status(200).json({
-    rooms: io.sockets.adapter.rooms.entries(),
+    rooms: onlineRooms,
   })
 })
 
 io.on('connection', (socket) => {
+  console.log('new socket connection', socket.id)
+
   setupRoomEvents(io, socket)
 })
 

@@ -40,6 +40,8 @@ export default defineConfig([
       '@stylistic/indent': ['error', 2],
       '@stylistic/quotes': ['error', 'single'],
       '@stylistic/semi': ['error', 'never'],
+
+      'react-refresh/only-export-components': 'off',
     },
   },
 ])

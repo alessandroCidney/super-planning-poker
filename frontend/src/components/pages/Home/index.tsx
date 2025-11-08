@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 
-import { api } from '../../../utils/api'
-
 import { AppButton } from '../../commons/AppButton'
+
+import { useRoom } from '../../../hooks/useRoom'
 
 import { StyledMain, Form, FloatingH1, FormField, FieldTitle, FieldInput, FormButton, FormBreak } from './styles'
 
 export function Home() {
+  const roomContext = useRoom()
+
   const [enterRoomPayload, setEnterRoomPayload] = useState({
     code: '',
     name: '',
@@ -29,20 +31,7 @@ export function Home() {
 
   async function handleCreateRoom() {
     try {
-      const payload = {
-        users: [
-          {
-            name: enterRoomPayload.name,
-            owner: true,
-            online: false,
-          },
-        ],
-      }
-
-      const response = await api.post('/rooms', payload)
-      const data = response.data
-
-      console.log('data', data)
+      roomContext.createRoom()
     } catch (err) {
       console.error('err', err)
     }
