@@ -2,14 +2,14 @@ import { createContext, useState, type ReactNode, useCallback } from 'react'
 import { useNavigate } from 'react-router'
 import { io, type Socket } from 'socket.io-client'
 
-import type { Room } from '../shared/interfaces/rooms.interface'
-import type { User } from '../shared/interfaces/users.interface'
+import type { Room } from '../types/rooms'
+import type { User } from '../types/users'
 
 interface RoomContextValue {
   createRoom: () => Promise<void>
   joinRoom: (roomId: string, userData: Partial<User>) => Promise<void>
 
-  roomData: unknown
+  roomData?: Room
 
   socket?: Socket
 }
@@ -40,6 +40,8 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
   }
 
   function updateRoom(updatedRoom: Room) {
+    console.log('updated room', updatedRoom)
+
     setRoomData(updatedRoom)
   }
 
@@ -57,6 +59,10 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
     setRoomData(createdRoom)
 
     newSocket.on('room:updated', updateRoom)
+
+    newSocket.onAny((eventName, ...args) => {
+      console.log('catch all', eventName, ...args)
+    })
 
     navigate(`/rooms/${createdRoom?._id}`)
   }
@@ -76,6 +82,8 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
 
     newSocket.on('room:updated', updateRoom)
   }, [])
+
+  // TODO: Leave room when user change route
 
   return (
     <RoomContext.Provider

@@ -18,11 +18,15 @@ export class StoryController {
 
     onlineRooms[roomId].stories[story._id] = story
 
+    this.io.to(roomId).emit('room:updated', onlineRooms[roomId])
+
     return story
   }
 
   removeStory(roomId: string, storyId: string) {
     delete onlineRooms[roomId].stories[storyId]
+
+    this.io.to(roomId).emit('room:updated', onlineRooms[roomId])
   }
 
   startVoting(roomId: string, storyId: string) {

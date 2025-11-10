@@ -4,5 +4,5 @@ export interface Story {
   description?: string
 
   votingStatus: 'not_started' | 'in_progress' | 'concluded'
-  votes: number[]
+  votes: Record<string, number>
 }

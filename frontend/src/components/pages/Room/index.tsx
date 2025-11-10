@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 
 import { AppButton } from '../../commons/AppButton'
@@ -15,12 +15,69 @@ export function Room() {
 
   const { roomId } = useParams()
 
-  const exampleCards = [
-    {
-      title: 'Criar novo botão',
-      description: 'Eu, como usuário, gostaria de que houvesse um novo botão bolado.',
-    },
-  ]
+  const [loading, setLoading] = useState({
+    createStory: false,
+    removeStory: false,
+    startVoting: false,
+    concludeVoting: false,
+  })
+
+  const [newStoryPayload, setNewStoryPayload] = useState({
+    title: '',
+    description: '',
+  })
+
+  function createStory(event: React.SyntheticEvent) {
+    event.preventDefault()
+
+    if (!socket) {
+      return
+    }
+    
+    setLoading({ ...loading, createStory: true })
+
+    socket.emit('story:create', roomId, newStoryPayload.title, newStoryPayload.description, () => {
+      setLoading({ ...loading, createStory: false })
+
+      setNewStoryPayload({ title: '', description: '' })
+    })
+  }
+
+  function removeStory(storyId: string) {
+    if (!socket) {
+      return
+    }
+    
+    setLoading({ ...loading, removeStory: true })
+
+    socket.emit('story:remove', roomId, storyId, () => {
+      setLoading({ ...loading, removeStory: false })
+    })
+  }
+
+  function startVoting(storyId: string) {
+    if (!socket) {
+      return
+    }
+
+    setLoading({ ...loading, startVoting: true })
+
+    socket.emit('story:start-voting', roomId, storyId, () => {
+      setLoading({ ...loading, startVoting: false })
+    })
+  }
+
+  function concludeVoting(storyId: string) {
+    if (!socket) {
+      return
+    }
+
+    setLoading({ ...loading, concludeVoting: true })
+
+    socket.emit('story:conclude-voting', roomId, storyId, () => {
+      setLoading({ ...loading, concludeVoting: false })
+    })
+  }
 
   console.log('render room page')
 
@@ -55,27 +112,60 @@ export function Room() {
             Fila de USs
           </h2>
 
-          <AppButton
-          >
-            Criar nova
-          </AppButton>
+          <form onSubmit={createStory}>
+            <input
+              type='text'
+              placeholder='Digite o título'
+              value={newStoryPayload.title}
+              onChange={(e) => setNewStoryPayload({ ...newStoryPayload, title: e.target.value })}
+            />
+
+            <input
+              type='text'
+              placeholder='Digite a descrição'
+              value={newStoryPayload.description}
+              onChange={(e) => setNewStoryPayload({ ...newStoryPayload, description: e.target.value })}
+            />
+
+            <button type='submit'>
+              Salvar
+            </button>
+          </form>
         </header>
 
         <div>
           {
-            exampleCards.map((cardData, cardDataIndex) => (
+            roomData && Object.values(roomData.stories).map((storyData) => (
               <StyledCard
-                key={`cardData${cardDataIndex}`}
+                key={storyData._id}
               >
                 <header>
                   <h3>
-                    { cardData.title }
+                    { storyData.title }
                   </h3>
                 </header>
 
                 <p>
-                  { cardData.description }
+                  { storyData.description }
                 </p>
+
+                <p>
+                  { storyData.votingStatus }
+                </p>
+
+                <button onClick={() => startVoting(storyData._id)}>
+                  Iniciar votação
+                </button>
+
+                <button onClick={() => concludeVoting(storyData._id)}>
+                  Encerrar votação
+                </button>
+
+                <button
+                  onClick={() => removeStory(storyData._id)}
+                >
+                  Remover
+                </button>
               </StyledCard>
             ))
           }
