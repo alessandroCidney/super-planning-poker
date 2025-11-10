@@ -10,6 +10,7 @@ import type { SocketResponse } from '../types/socket'
 interface RoomContextValue {
   createRoom: (userData: Partial<User>) => Promise<void>
   joinRoom: (roomId: string, userData: Partial<User>) => Promise<void>
+  leaveRoom: () => void
 
   roomData?: Room
 
@@ -43,6 +44,18 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
         resolve(newSocket)
       })
     })
+  }, [socket])
+
+  const leaveRoom = useCallback(async () => {
+    if (socket) {
+      socket.removeAllListeners()
+
+      socket.disconnect()
+
+      setRoomData(undefined)
+
+      window.location.href = window.location.origin
+    }
   }, [socket])
 
   function updateRoom(updatedRoom: Room) {
@@ -108,6 +121,7 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
       value={{
         createRoom,
         joinRoom,
+        leaveRoom,
         roomData,
         socket,
       }}

@@ -11,7 +11,7 @@ export function Room() {
   const navigate = useNavigate()
   const { roomId } = useParams()
 
-  const { roomData, socket } = useRoom()
+  const { roomData, socket, leaveRoom } = useRoom()
 
   const [loading, setLoading] = useState({
     createStory: false,
@@ -162,6 +162,10 @@ export function Room() {
             ))
           }
         </div>
+
+        <button onClick={leaveRoom}>
+          Sair da sala
+        </button>
       </StyledAside>
     </StyledMain>
   )

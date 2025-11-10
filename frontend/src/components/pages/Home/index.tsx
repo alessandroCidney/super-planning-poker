@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useSearchParams } from 'react-router'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router'
 
 import { AppButton } from '../../commons/AppButton'
 
@@ -8,7 +8,9 @@ import { useRoom } from '../../../hooks/useRoom'
 import { StyledMain, Form, FloatingH1, FormField, FieldTitle, FieldInput, FormButton, FormBreak } from './styles'
 
 export function Home() {
-  const roomContext = useRoom()
+  const navigate = useNavigate()
+
+  const { joinRoom, createRoom, roomData } = useRoom()
 
   const [searchParams] = useSearchParams()
 
@@ -29,12 +31,18 @@ export function Home() {
     event.preventDefault()
 
     if (enterRoomPayload.code) {
-      await roomContext.joinRoom(enterRoomPayload.code, { name: enterRoomPayload.name })
+      await joinRoom(enterRoomPayload.code, { name: enterRoomPayload.name })
     } else {
-      await roomContext.createRoom({ name: enterRoomPayload.name })
+      await createRoom({ name: enterRoomPayload.name })
     }
   }
   
+  useEffect(() => {
+    if (roomData) {
+      navigate(`/rooms/${roomData._id}`)
+    }
+  }, [navigate, roomData])
+
   return (
     <StyledMain>
       <FloatingH1>
