@@ -3,6 +3,8 @@ import { Socket, Server } from 'socket.io'
 import { Room } from '../models/Room'
 import { User } from '../models/User'
 
+import { AppError } from '../helpers/error'
+
 export const onlineRooms: Record<string, Room> = {}
 
 export class RoomController {
@@ -27,6 +29,10 @@ export class RoomController {
   }
 
   joinRoom(roomId: string, userData: Partial<User>) {
+    if (!onlineRooms[roomId]) {
+      throw new AppError('Cannot found room', 404)
+    }
+
     const user = new User(userData.name, this.socket.id)
 
     this.socket.join(roomId)

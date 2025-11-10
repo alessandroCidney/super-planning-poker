@@ -5,6 +5,8 @@ import { io, type Socket } from 'socket.io-client'
 import type { Room } from '../types/rooms'
 import type { User } from '../types/users'
 
+import type { SocketResponse } from '../types/socket'
+
 interface RoomContextValue {
   createRoom: () => Promise<void>
   joinRoom: (roomId: string, userData: Partial<User>) => Promise<void>
@@ -27,7 +29,11 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
 
   const [roomData, setRoomData] = useState<Room>()
 
-  async function connectToSocket() {
+  const connectToSocket = useCallback(async () => {
+    if (socket) {
+      return socket
+    }
+
     const newSocket = io(import.meta.env.VITE_API_URL)
 
     setSocket(newSocket)
@@ -37,7 +43,7 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
         resolve(newSocket)
       })
     })
-  }
+  }, [socket])
 
   function updateRoom(updatedRoom: Room) {
     console.log('updated room', updatedRoom)
@@ -48,23 +54,25 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
   async function createRoom() {
     const newSocket = await connectToSocket()
 
-    const createdRoom = await new Promise<Room>((resolve) => {
-      newSocket.emit('room:create', (newRoom: Room) => {
-        console.log('front-end callback', newRoom)
-
-        resolve(newRoom)
+    const createRoomResponse = await new Promise<SocketResponse<Room>>((resolve) => {
+      newSocket.emit('room:create', (response: SocketResponse<Room>) => {
+        resolve(response)
       })
     })
 
-    setRoomData(createdRoom)
+    if (createRoomResponse.error) {
+      window.alert('Erro ao criar sala')
+    } else {
+      setRoomData(createRoomResponse.data)
 
-    newSocket.on('room:updated', updateRoom)
+      newSocket.on('room:updated', updateRoom)
 
-    newSocket.onAny((eventName, ...args) => {
-      console.log('catch all', eventName, ...args)
-    })
+      newSocket.onAny((eventName, ...args) => {
+        console.log('catch all', eventName, ...args)
+      })
 
-    navigate(`/rooms/${createdRoom?._id}`)
+      navigate(`/rooms/${createRoomResponse.data._id}`)
+    }
   }
 
   console.log('render room context')
@@ -72,16 +80,24 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
   const joinRoom = useCallback(async (roomId: string, userData: Partial<User>) => {
     const newSocket = await connectToSocket()
 
-    const joinedRoom = await new Promise<Room>((resolve) => {
-      newSocket.emit('room:join', roomId, userData, (joinedRoom: Room) => {
-        resolve(joinedRoom)
+    const joinResponse = await new Promise<SocketResponse<Room>>((resolve) => {
+      newSocket.emit('room:join', roomId, userData, (response: SocketResponse<Room>) => {
+        resolve(response)
       })
     })
 
-    setRoomData(joinedRoom)
+    console.log('joinResponse', joinResponse)
 
-    newSocket.on('room:updated', updateRoom)
-  }, [])
+    if (joinResponse.error) {
+      window.alert('Não foi possível se conectar à sala.')
+
+      navigate('/')
+    } else {
+      setRoomData(joinResponse.data)
+
+      newSocket.on('room:updated', updateRoom)
+    }
+  }, [connectToSocket, navigate])
 
   // TODO: Leave room when user change route
 

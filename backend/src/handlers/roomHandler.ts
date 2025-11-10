@@ -3,9 +3,10 @@ import { Socket, Server } from 'socket.io'
 import { RoomController, onlineRooms } from '../controllers/RoomController'
 
 import { User } from '../models/User'
-import { Room } from '../models/Room'
 
-type SocketCallback<T> = (param: T) => void
+import { AppError } from '../helpers/error'
+
+import { SocketCallback } from '../types/socket'
 
 let loadedGeneralEvents = false
 
@@ -22,16 +23,35 @@ function setupRoomGeneralEvents(roomController: RoomController, io: Server) {
 }
 
 function setupRoomIndividualEvents(roomController: RoomController, socket: Socket) {
-  socket.on('room:create', (callback: SocketCallback<Room>) => {
+  socket.on('room:create', (callback: SocketCallback) => {
     const newRoom = roomController.createRoom()
 
-    callback(newRoom)
+    callback({
+      status: 201,
+      error: false,
+      data: newRoom,
+    })
   })
 
-  socket.on('room:join', (roomId: string, userData: Partial<User>, callback: SocketCallback<Room>) => {
-    const joinedRoom = roomController.joinRoom(roomId, userData)
+  socket.on('room:join', (roomId: string, userData: Partial<User>, callback: SocketCallback) => {
+    try {
+      const joinedRoom = roomController.joinRoom(roomId, userData)
 
-    callback(joinedRoom)
+      callback({
+        status: 200,
+        error: false,
+        data: joinedRoom,
+      })
+    } catch (err) {
+      if (err instanceof AppError) {
+        callback({
+          error: true,
+          status: err.status,
+          message: err.message,
+          data: null,
+        })
+      }
+    }
   })
 
   socket.on('disconnecting', () => {
