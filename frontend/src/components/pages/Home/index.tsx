@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 
-import { AppButton } from '../../commons/AppButton'
+import { DefaultButton } from '../../commons/DefaultButton'
 
 import { useRoom } from '../../../hooks/useRoom'
 
@@ -78,9 +78,9 @@ export function Home() {
                 ou
               </FormBreak>
 
-              <AppButton>
+              <DefaultButton>
                 Crie uma nova
-              </AppButton>
+              </DefaultButton>
             </Form>
           )
           : (
@@ -105,9 +105,9 @@ export function Home() {
                   onChange={(e) => setEnterRoomPayload({ ...enterRoomPayload, name: e.target.value })}
                 />
 
-                <AppButton>
+                <DefaultButton>
                   Continuar
-                </AppButton>
+                </DefaultButton>
               </FormField>
             </Form>
           )

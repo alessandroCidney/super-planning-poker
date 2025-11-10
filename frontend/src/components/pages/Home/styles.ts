@@ -16,11 +16,11 @@ export const Form = styled.form`
 
   padding: 20px;
 
-  background-color: #30a9ffff;
+  background-color: var(--theme-primary-lighten-1-color);
 
   color: #fff;
 
-  border-radius: 8px;
+  border-radius: 24px;
 `
 
 export const FormField = styled.label`
@@ -41,10 +41,15 @@ export const FieldInput = styled.input`
   padding: 10px;
   margin: 20px 0;
 
-  border-radius: 8px;
+  border: none;
+  border-radius: 16px;
 
   text-align: center;
   font-size: 1.5rem;
+
+  &:focus {
+    outline: 4px solid var(--theme-primary-color);
+  }
 `
 
 export const FloatingH1 = styled.h1`

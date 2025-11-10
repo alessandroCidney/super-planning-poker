@@ -10,24 +10,11 @@ export const StyledMain = styled.section`
 `
 
 export const StyledSection = styled.section`
-  flex: 1 1 0;
-`
-
-export const StyledAside = styled.aside`
   height: 100%;
-  width: 500px;
+
+  position: relative;
   
-  padding: 20px 30px;
-
-  background-color: #f5f5f5;
-
-  header {
-    margin-bottom: 20px;
-
-    h2 {
-      margin-bottom: 20px;
-    }
-  }
+  flex: 1 1 0;
 `
 
 export const StyledCard = styled.article`
@@ -44,4 +31,12 @@ export const StyledCard = styled.article`
       font-weight: 600;
     }
   }
+`
+
+export const StyledCardsContainer = styled.div`
+  position: absolute;
+
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 `
