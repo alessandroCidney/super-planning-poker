@@ -51,7 +51,18 @@ function calculateEllipsePointCoordinateByDegree(ellipseA: number, ellipseB: num
   }
 }
 
-export function calculateEllipseEquidistantPointsCoordinates(ellipseWidth: number, ellipseHeight: number, pieces: number, baseDegree: number) {
+export interface EllipseCoordinate {
+  x: number
+  y: number
+  degree: number
+}
+
+export function calculateEllipseEquidistantPointsCoordinates(
+  ellipseWidth: number,
+  ellipseHeight: number,
+  pieces: number,
+  baseDegree: number,
+): EllipseCoordinate[] {
   const degressArr = calculateEquidistantPointDegrees(pieces, baseDegree)
 
   const coordinatesArr = degressArr.map(degree => calculateEllipsePointCoordinateByDegree(ellipseWidth / 2, ellipseHeight / 2, degree))

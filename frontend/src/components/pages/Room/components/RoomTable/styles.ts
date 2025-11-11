@@ -24,21 +24,3 @@ export const StyledTable = styled.div`
 
   border-radius: 50%;
 `
-
-interface StyledCircleProps {
-  $translateX: number
-  $translateY: number
-}
-
-export const StyledCircle = styled.div<StyledCircleProps>`
-  position: absolute;
-
-  width: 70px;
-  height: 70px;
-
-  border-radius: 50%;
-
-  background-color: var(--theme-primary-color);
-
-  transform: translate(${props => props.$translateX ? `${props.$translateX}px` : '0px'}, ${props => props.$translateY ? `${props.$translateY}px` : '0px'});
-`
