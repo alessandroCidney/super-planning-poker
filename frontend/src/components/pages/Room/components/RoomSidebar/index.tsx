@@ -26,6 +26,14 @@ export function RoomSidebar() {
     await roomContext.removeStory(storyId)
   }
 
+  async function startVoting(storyId: string) {
+    await roomContext.startVoting(storyId)
+  }
+
+  async function concludeVoting(storyId: string) {
+    await roomContext.concludeVoting(storyId)
+  }
+
   return (
     <StyledAside>
       <header>
@@ -60,7 +68,9 @@ export function RoomSidebar() {
               <UsCard
                 key={storyData._id}
                 storyData={storyData}
-                handleRemove={removeStory}
+                removeStory={removeStory}
+                startVoting={startVoting}
+                concludeVoting={concludeVoting}
               />
             ))
           }

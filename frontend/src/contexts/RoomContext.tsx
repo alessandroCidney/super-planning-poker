@@ -15,6 +15,9 @@ interface RoomContextValue {
 
   createStory: (title: string) => Promise<void>
   removeStory: (storyId: string) => Promise<void>
+  startVoting: (storyId: string) => Promise<void>
+  saveVote: (storyId: string, voteValue: number) => Promise<void>
+  concludeVoting: (storyId: string) => Promise<void>
 
   roomData?: Room
 
@@ -154,6 +157,60 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
     }
   }, [getSocket, roomData])
 
+  const startVoting = useCallback(async (storyId: string) => {
+    const currentSocket = await getSocket()
+
+    if (!roomData) {
+      throw new Error('The room data has not yet been loaded.')
+    }
+
+    const response = await new Promise<SocketResponse<Story>>((resolve) => {
+      currentSocket.emit('story:start-voting', roomData._id, storyId, (res: SocketResponse<Story>) => {
+        resolve(res)
+      })
+    })
+
+    if (response.error) {
+      window.alert('Não foi possível iniciar a votação.')
+    }
+  }, [getSocket, roomData])
+
+  const saveVote = useCallback(async (storyId: string, voteValue: number) => {
+    const currentSocket = await getSocket()
+
+    if (!roomData) {
+      throw new Error('The room data has not yet been loaded.')
+    }
+
+    const response = await new Promise<SocketResponse<Story>>((resolve) => {
+      currentSocket.emit('story:start-voting', roomData._id, storyId, voteValue, (res: SocketResponse<Story>) => {
+        resolve(res)
+      })
+    })
+
+    if (response.error) {
+      window.alert('Não foi possível salvar o voto.')
+    }
+  }, [getSocket, roomData])
+
+  const concludeVoting = useCallback(async (storyId: string) => {
+    const currentSocket = await getSocket()
+
+    if (!roomData) {
+      throw new Error('The room data has not yet been loaded.')
+    }
+
+    const response = await new Promise<SocketResponse<Story>>((resolve) => {
+      currentSocket.emit('story:conclude-voting', roomData._id, storyId, (res: SocketResponse<Story>) => {
+        resolve(res)
+      })
+    })
+
+    if (response.error) {
+      window.alert('Não foi possível concluir a votação.')
+    }
+  }, [getSocket, roomData])
+
   return (
     <RoomContext.Provider
       value={{
@@ -163,6 +220,9 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
 
         createStory,
         removeStory,
+        startVoting,
+        saveVote,
+        concludeVoting,
 
         roomData,
         socket,
