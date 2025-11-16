@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 
+import type { Socket } from 'socket.io-client'
+
 import { calculateEllipseEquidistantPointsCoordinates } from '../../../../../utils/calc'
 import { StyledTable, StyledTableContainer } from './styles'
 
@@ -7,7 +9,7 @@ import { useRoom } from '../../../../../hooks/useRoom'
 import { UserAvatar } from './components/UserAvatar'
 
 export function RoomTable() {
-  const { roomData, socket } = useRoom()
+  const roomContext = useRoom()
 
   const tableDimensions = {
     width: 820,
@@ -16,12 +18,12 @@ export function RoomTable() {
 
   const positionedUsers = useMemo(
     () => {
-      if (!socket) {
+      if (!roomContext.socket) {
         return []
       }
 
       // generate user coordinates
-      let usersArr = Object.values(roomData?.users ?? {})
+      let usersArr = Object.values(roomContext.roomData?.users ?? {})
 
       let coordinatesArr = calculateEllipseEquidistantPointsCoordinates(
         tableDimensions.width + 70,
@@ -31,7 +33,7 @@ export function RoomTable() {
       )
 
       // remove current user from calculations
-      usersArr = usersArr.filter(item => item._id !== socket.id)
+      usersArr = usersArr.filter(item => item._id !== (roomContext.socket as Socket).id)
       coordinatesArr = coordinatesArr.filter(item => item.degree !== 270)
 
       if (usersArr.length !== coordinatesArr.length) {
@@ -46,10 +48,20 @@ export function RoomTable() {
 
       return usersWithCoordinates
     },
-    [roomData?.users, socket, tableDimensions.height, tableDimensions.width],
+    [roomContext.roomData?.users, roomContext.socket, tableDimensions.height, tableDimensions.width],
   )
 
-  return roomData
+  const votingStory = useMemo(() => {
+    if (!roomContext.roomData || !roomContext.socket?.id) {
+      return undefined
+    }
+
+    const activeStory = Object.values(roomContext.roomData.stories).find(storyData => storyData.votingStatus === 'in_progress')
+
+    return activeStory
+  }, [roomContext.roomData, roomContext.socket?.id])
+
+  return roomContext.roomData
     ? (
       <StyledTableContainer>
         <StyledTable>
@@ -59,6 +71,7 @@ export function RoomTable() {
                 key={positionedUser.user._id}
                 user={positionedUser.user}
                 coordinates={positionedUser.coordinates}
+                disabled={!!votingStory && positionedUser.user._id in votingStory.votes}
               />)
           }
         </StyledTable>

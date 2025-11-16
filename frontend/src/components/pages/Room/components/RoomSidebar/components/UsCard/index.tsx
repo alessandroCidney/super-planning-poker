@@ -5,7 +5,7 @@ import { DefaultButton } from '../../../../../../commons/DefaultButton'
 
 import type { Story } from '../../../../../../../types/stories'
 
-import { FloatingActions, StyledCardActions, StyledCardContainer, StyledHeader, StyledVotingResult, StyledWarning } from './styles'
+import { FloatingActions, StyledCardActions, StyledCardContainer, StyledHeader, StyledVotingResultContainer, StyledVotingResult, StyledWarning } from './styles'
 
 interface UsCardProps {
   storyData: Story
@@ -134,7 +134,7 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
       </StyledHeader>
 
       <StyledCardActions>
-        <div>
+        <StyledVotingResultContainer>
           {
             votingResult.map((voteValue) => (
               <StyledVotingResult>
@@ -142,7 +142,7 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
               </StyledVotingResult>
             ))
           }
-        </div>
+        </StyledVotingResultContainer>
 
         <FloatingActions>
           <DefaultButton

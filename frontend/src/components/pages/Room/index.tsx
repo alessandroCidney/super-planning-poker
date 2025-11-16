@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
 import { useRoom } from '../../../hooks/useRoom'
 
 import { RoomSidebar } from './components/RoomSidebar'
 
-import { StyledMain, StyledSection, StyledCard, StyledCardsContainer } from './styles'
+import { StyledMain, StyledSection, StyledCardsContainer } from './styles'
 import { PokerCard } from './components/PokerCard'
 import { RoomHeader } from './components/RoomHeader'
 import { RoomTable } from './components/RoomTable'
@@ -14,7 +14,7 @@ export function Room() {
   const navigate = useNavigate()
   const { roomId } = useParams()
 
-  const { roomData, socket, leaveRoom } = useRoom()
+  const roomContext = useRoom()
 
   const [loading, setLoading] = useState({
     createStory: false,
@@ -23,73 +23,71 @@ export function Room() {
     concludeVoting: false,
   })
 
-  const [newStoryPayload, setNewStoryPayload] = useState({
-    title: '',
-    description: '',
-  })
+  const cardsData = [
+    {
+      value: 1,
+      color: 'var(--theme-primary-darken-2-color)',
+    },
+    {
+      value: 3,
+      color: 'var(--theme-primary-darken-1-color)',
+    },
+    {
+      value: 5,
+      color: 'var(--theme-primary-color)',
+    },
+    {
+      value: 8,
+      color: 'var(--theme-primary-lighten-1-color)',
+    },
+    {
+      value: 13,
+      color: 'var(--theme-primary-lighten-2-color)',
+    },
+  ]
 
-  function createStory(event: React.SyntheticEvent) {
-    event.preventDefault()
-
-    if (!socket) {
-      return
-    }
-    
-    setLoading({ ...loading, createStory: true })
-
-    socket.emit('story:create', roomId, newStoryPayload.title, newStoryPayload.description, () => {
-      setLoading({ ...loading, createStory: false })
-
-      setNewStoryPayload({ title: '', description: '' })
-    })
-  }
-
-  function removeStory(storyId: string) {
-    if (!socket) {
-      return
-    }
-    
-    setLoading({ ...loading, removeStory: true })
-
-    socket.emit('story:remove', roomId, storyId, () => {
-      setLoading({ ...loading, removeStory: false })
-    })
-  }
-
-  function startVoting(storyId: string) {
-    if (!socket) {
-      return
+  async function saveVote(voteValue: number) {
+    if (!roomContext.roomData) {
+      throw new Error('Cannot found room data.')
     }
 
-    setLoading({ ...loading, startVoting: true })
+    const activeStory = Object.values(roomContext.roomData.stories).find(storyData => storyData.votingStatus === 'in_progress')
 
-    socket.emit('story:start-voting', roomId, storyId, () => {
-      setLoading({ ...loading, startVoting: false })
-    })
-  }
-
-  function concludeVoting(storyId: string) {
-    if (!socket) {
-      return
+    if (!activeStory) {
+      throw new Error('There are no stories up for vote.')
     }
 
-    setLoading({ ...loading, concludeVoting: true })
-
-    socket.emit('story:conclude-voting', roomId, storyId, () => {
-      setLoading({ ...loading, concludeVoting: false })
-    })
+    await roomContext.saveVote(activeStory._id, voteValue)
   }
+
+  const votingStatus = useMemo(() => {
+    if (!roomContext.roomData || !roomContext.socket?.id) {
+      return 'disconnected'
+    }
+
+    const activeStory = Object.values(roomContext.roomData.stories).find(storyData => storyData.votingStatus === 'in_progress')
+
+    if (!activeStory) {
+      return 'no_voting_started'
+    }
+
+    if (roomContext.socket.id in activeStory.votes) {
+      return 'already_voted'
+    }
+
+    return 'havent_voted_yet'
+  }, [roomContext.roomData, roomContext.socket?.id])
 
   console.log('render room page')
 
   useEffect(() => {
-    if (!roomData) {
+    if (!roomContext.roomData) {
       navigate({
         pathname: '/',
         search: `?room=${roomId}`,
       })
     }
-  }, [navigate, roomData, roomId])
+  }, [navigate, roomContext.roomData, roomId])
 
   return (
     <StyledMain>
@@ -98,10 +96,22 @@ export function Room() {
 
         <RoomTable />
 
-        <StyledCardsContainer>
-          <PokerCard
-            cardValue={5}
-          />
+        <StyledCardsContainer
+          className={
+            ['no_voting_started', 'already_voted', 'disconnected'].includes(votingStatus)
+              ? 'cards-container--disabled'
+              : ''}
+        >
+          {
+            cardsData.map((cardData, cardDataIndex) => (
+              <PokerCard
+                key={`cardDataIndex${cardDataIndex}`}
+                cardValue={cardData.value}
+                color={cardData.color}
+                onClick={() => saveVote(cardData.value)}
+              />
+            ))
+          }
         </StyledCardsContainer>
       </StyledSection>
 

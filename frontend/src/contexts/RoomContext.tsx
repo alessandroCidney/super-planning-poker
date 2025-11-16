@@ -184,7 +184,7 @@ export function RoomContextProvider({ children }: RoomContextProviderProps) {
     }
 
     const response = await new Promise<SocketResponse<Story>>((resolve) => {
-      currentSocket.emit('story:start-voting', roomData._id, storyId, voteValue, (res: SocketResponse<Story>) => {
+      currentSocket.emit('story:save-vote', roomData._id, storyId, voteValue, (res: SocketResponse<Story>) => {
         resolve(res)
       })
     })

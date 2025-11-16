@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 interface StyleButtonProps {
   $width?: string
+  $color?: string
 }
 
 export const StyledButton = styled.button<StyleButtonProps>`
@@ -16,5 +17,7 @@ export const StyledButton = styled.button<StyleButtonProps>`
   border: none;
   border-radius: 8px;
 
-  background-color: var(--theme-primary-color);
+  background-color: ${props => props.$color ?? 'var(--theme-primary-color)'};
+
+  cursor: pointer;
 `

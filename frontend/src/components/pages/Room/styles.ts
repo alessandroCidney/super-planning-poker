@@ -34,9 +34,18 @@ export const StyledCard = styled.article`
 `
 
 export const StyledCardsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  
   position: absolute;
 
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+
+  &.cards-container--disabled {
+    filter: saturate(0);
+  }
 `

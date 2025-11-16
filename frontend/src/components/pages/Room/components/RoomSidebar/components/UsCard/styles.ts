@@ -64,6 +64,13 @@ export const StyledWarning = styled.div`
   border-radius: 999px;
 `
 
+export const StyledVotingResultContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+`
+
 export const StyledVotingResult = styled.div`
   display: flex;
   align-items: center;

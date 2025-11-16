@@ -22,6 +22,10 @@ export const StyledUserContainer = styled.div<StyledCircleProps>`
   transform: translate(${props => props.$translateX ? `${props.$translateX}px` : '0px'}, ${props => props.$translateY ? `${props.$translateY}px` : '0px'});
 
   transition: all 1s ease-in-out;
+
+  &.user-avatar--disabled {
+    filter: saturate(0);
+  }
 `
 
 export const StyledUserName = styled.div`
