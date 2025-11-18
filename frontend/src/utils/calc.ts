@@ -69,3 +69,7 @@ export function calculateEllipseEquidistantPointsCoordinates(
 
   return coordinatesArr
 }
+
+export function generateQuadraticEquation(a: number, b: number, c: number) {
+  return (x: number) => a * x ** 2 + b * x + c
+}
