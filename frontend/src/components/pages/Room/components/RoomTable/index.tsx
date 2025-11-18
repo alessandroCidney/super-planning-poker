@@ -7,6 +7,7 @@ import { StyledTable, StyledTableContainer } from './styles'
 
 import { useRoom } from '../../../../../hooks/useRoom'
 import { UserAvatar } from './components/UserAvatar'
+import { StackOfCards } from './components/StackOfCards'
 
 export function RoomTable() {
   const roomContext = useRoom()
@@ -73,6 +74,14 @@ export function RoomTable() {
                 coordinates={positionedUser.coordinates}
                 disabled={!!votingStory && positionedUser.user._id in votingStory.votes}
               />)
+          }
+
+          {
+            votingStory?.votes && (
+              <StackOfCards
+                votingStory={votingStory}
+              />
+            )
           }
         </StyledTable>
       </StyledTableContainer>

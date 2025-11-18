@@ -73,3 +73,11 @@ export function calculateEllipseEquidistantPointsCoordinates(
 export function generateQuadraticEquation(a: number, b: number, c: number) {
   return (x: number) => a * x ** 2 + b * x + c
 }
+
+export function naturalExponentialFunction(k: number) {
+  return (x: number) => Math.E ** (k * x)
+}
+
+export function randomIntFromInterval(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
