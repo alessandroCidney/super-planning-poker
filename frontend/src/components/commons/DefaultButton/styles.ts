@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 interface ButtonProps {
   $color?: string
+  $textColor?: string
   $hoverColor?: string
 
   $minWidth?: string
@@ -21,7 +22,7 @@ export const StyledButton = styled.button<ButtonProps>`
 
   font-size: 1.1rem;
   font-weight: 500;
-  color: #fff;
+  color: ${props => props.$textColor || '#fff'};
 
   background-color: ${props => props.$color || 'var(--theme-primary-darken-1-color)'};
 

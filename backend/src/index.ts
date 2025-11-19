@@ -29,10 +29,20 @@ app.get('/', (req, res) => {
   })
 })
 
-app.get('/rooms', (req, res) => {
-  res.status(200).json({
-    rooms: onlineRooms,
-  })
+app.get('/rooms/:id', (req, res) => {
+  const roomId = req.params.id
+
+  const roomData = onlineRooms[roomId]
+
+  if (roomData) {
+    res.status(200).json({
+      _id: roomData._id,
+    })
+  } else {
+    res.status(404).json({
+      message: 'Cannot found room',
+    })
+  }
 })
 
 io.on('connection', (socket) => {

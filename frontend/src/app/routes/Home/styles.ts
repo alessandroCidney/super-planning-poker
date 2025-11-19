@@ -85,3 +85,9 @@ export const FormBreak = styled.p`
     background-color: rgb(255, 255, 255, .5);
   }
 `
+
+export const FormActions = styled.div`
+  button:not(:last-of-type) {
+    margin-bottom: 10px;
+  }
+`

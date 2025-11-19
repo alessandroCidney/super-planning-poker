@@ -7,7 +7,7 @@ import { createRoom, joinRoom } from '@/features/room/roomSlice'
 
 import { useRedux } from '@/hooks/useRedux'
 
-import { StyledMain, Form, FloatingH1, FormField, FieldTitle, FieldInput, FormBreak } from './styles'
+import { StyledMain, Form, FloatingH1, FormField, FieldTitle, FieldInput, FormBreak, FormActions } from './styles'
 
 export function Home() {
   const navigate = useNavigate()
@@ -61,7 +61,7 @@ export function Home() {
   return (
     <StyledMain>
       <FloatingH1>
-        Home
+        Online Planning Poker
       </FloatingH1>
 
       {
@@ -83,17 +83,27 @@ export function Home() {
                   value={enterRoomPayload.code}
                   onChange={(e) => setEnterRoomPayload({ ...enterRoomPayload, code: e.target.value })}
                 />
-
-                <DefaultButton block>
-                  Entrar
-                </DefaultButton>
               </FormField>
+
+              <DefaultButton
+                color='var(--theme-primary-darken-2-color)'
+                hoverColor='var(--theme-primary-darken-3-color)'
+                block
+                type='submit'
+              >
+                Entrar
+              </DefaultButton>
 
               <FormBreak>
                 ou
               </FormBreak>
 
-              <DefaultButton block>
+              <DefaultButton
+                color='var(--theme-primary-darken-2-color)'
+                hoverColor='var(--theme-primary-darken-3-color)'
+                block
+                type='submit'
+              >
                 Crie uma nova
               </DefaultButton>
             </Form>
@@ -119,11 +129,29 @@ export function Home() {
                   value={enterRoomPayload.name}
                   onChange={(e) => setEnterRoomPayload({ ...enterRoomPayload, name: e.target.value })}
                 />
+              </FormField>
 
-                <DefaultButton block>
+              <FormActions>
+                <DefaultButton
+                  color='var(--theme-primary-darken-2-color)'
+                  hoverColor='var(--theme-primary-darken-3-color)'
+                  block
+                  type='submit'
+                >
                   Continuar
                 </DefaultButton>
-              </FormField>
+
+                <DefaultButton
+                  color='#fff'
+                  hoverColor='#eee'
+                  textColor='#000'
+                  block
+                  type='button'
+                  onClick={() => setFormStep('room')}
+                >
+                  Voltar
+                </DefaultButton>
+              </FormActions>
             </Form>
           )
       }
