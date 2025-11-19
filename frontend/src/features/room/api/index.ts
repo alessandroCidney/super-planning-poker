@@ -77,7 +77,7 @@ export const setupSocketMiddleware: Middleware<{}, RootState> = (store) => {
     const typedAction = action as PayloadAction<unknown>
 
     const roomHandlerResult = setupRoomHandlers(store, typedAction, makeSureIsConnected, emitMessage)
-    const storyHandlerResult = setupStoryHandlers(typedAction, makeSureRoomIsLoaded, emitMessage)
+    const storyHandlerResult = setupStoryHandlers(store, typedAction, makeSureRoomIsLoaded, emitMessage)
 
     const resultArr = [roomHandlerResult, storyHandlerResult]
 

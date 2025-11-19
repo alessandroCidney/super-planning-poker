@@ -62,5 +62,7 @@ export const StyledCardsContainer = styled.div`
 
   &.cards-container--readonly {
     pointer-events: none;
+
+    opacity: 0.8;
   }
 `

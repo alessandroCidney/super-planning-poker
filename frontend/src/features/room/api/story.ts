@@ -1,12 +1,21 @@
-import type { PayloadAction } from '@reduxjs/toolkit'
+import type { Middleware, PayloadAction } from '@reduxjs/toolkit'
 
 import * as roomSlice from '@/features/room/roomSlice'
+import * as notificationsSlice from '@/features/notifications/notificationsSlice'
+
+import type { RootState } from '@/app/store'
 
 import type { Room } from '@/types/rooms'
 import type { SocketResponse } from '@/types/socket'
 import type { Story } from '@/types/stories'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+type MiddlewareType = Middleware<{}, RootState>
+
+type MiddlewareStoreParam = Parameters<MiddlewareType>[0]
+
 export function setupStoryHandlers(
+  store: MiddlewareStoreParam,
   action: PayloadAction<unknown>,
   makeSureRoomIsLoaded: () => Room,
   emitMessage: <T>(type: string, payload: unknown) => Promise<SocketResponse<T>>,
@@ -18,6 +27,15 @@ export function setupStoryHandlers(
       roomId: currentRoom._id,
       title,
     })
+
+    store.dispatch(notificationsSlice.showMessage({
+      title: 'Tarefa adicionada!',
+      description: 'A nova tarefa foi adicionada com sucesso.',
+    }))
+
+    setTimeout(() => {
+      store.dispatch(notificationsSlice.hideMessage())
+    }, 3000)
   }
 
   async function removeStory(storyId: string) {

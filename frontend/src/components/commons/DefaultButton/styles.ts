@@ -5,6 +5,8 @@ interface ButtonProps {
   $hoverColor?: string
 
   $minWidth?: string
+
+  $iconSize?: string
 }
 
 export const StyledButton = styled.button<ButtonProps>`
@@ -39,7 +41,8 @@ export const StyledButton = styled.button<ButtonProps>`
   }
 
   &.default-button--icon {
-    width: 50px;
+    width: ${props => props.$iconSize ?? '50px'};
+    height: ${props => props.$iconSize ?? '50px'};
 
     padding: 0;
 

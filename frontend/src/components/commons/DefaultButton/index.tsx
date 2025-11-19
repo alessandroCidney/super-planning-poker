@@ -5,6 +5,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   color?: string
   hoverColor?: string
   minWidth?: string
+  iconSize?: string
 
   block?: boolean
   icon?: boolean
@@ -18,6 +19,7 @@ export function DefaultButton({
   color,
   hoverColor,
   minWidth,
+  iconSize,
 
   className,
 
@@ -59,6 +61,7 @@ export function DefaultButton({
       $color={color}
       $hoverColor={hoverColor}
       $minWidth={minWidth}
+      $iconSize={iconSize}
       {...rest}
     >
       { prependIcon }

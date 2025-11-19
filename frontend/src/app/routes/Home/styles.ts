@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 
+import cardBackground from '@/assets/images/backgrounds/card-background.jpg'
+
 export const StyledMain = styled.section`
   height: 100vh;
   width: 100vw;
@@ -8,19 +10,21 @@ export const StyledMain = styled.section`
   align-items: center;
   justify-content: center;
 
-  background-color: var(--theme-primary-color);
+  background: url(${cardBackground});
 `
 
 export const Form = styled.form`
   width: 500px;
 
-  padding: 20px;
-
-  background-color: var(--theme-primary-lighten-1-color);
+  padding: 30px;
 
   color: #fff;
+  
+  background-color: var(--theme-primary-color);
 
-  border-radius: 24px;
+  border: 3px solid #fff;
+
+  border-radius: 50px;
 `
 
 export const FormField = styled.label`
