@@ -2,23 +2,6 @@ import styled from 'styled-components'
 
 import { PokerCard } from './components/PokerCard'
 
-export const StyledMain = styled.section`
-  height: 100vh;
-  width: 100vw;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-export const StyledSection = styled.section`
-  height: 100%;
-
-  position: relative;
-  
-  flex: 1 1 0;
-`
-
 interface StyledPokerCardProps {
   $translateX: string
   $translateY: string

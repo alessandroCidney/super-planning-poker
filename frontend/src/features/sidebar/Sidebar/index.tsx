@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react'
+
 import { BsX } from 'react-icons/bs'
 
-import { openSidebar, closeSidebar } from '../sidebarSlice'
+import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
-import { DefaultButton } from '../../../components/commons/DefaultButton'
+import { DefaultButton } from '@/components/commons/DefaultButton'
 
-import { useRedux } from '../../../hooks/useRedux'
+import * as sidebarSlice from '../sidebarSlice'
 
 import { StyledAside } from './styles'
 
@@ -16,30 +17,38 @@ interface SidebarProps {
 }
 
 export function Sidebar({ children, title }: SidebarProps) {
-  const { useAppSelector, useAppDispatch } = useRedux()
-
   const dispatch = useAppDispatch()
 
-  const sidebarOpen = useAppSelector(state => state.sidebar.open)
+  const sidebarIsOpen = useAppSelector(state => state.sidebar.open)
 
-  return sidebarOpen
-    ? (
-      <StyledAside>
-        <header>
-          <h2>
-            { title }
-          </h2>
+  return (
+    <StyledAside
+      initial={{
+        translateX: '500px',
+      }}
+      animate={{
+        translateX: sidebarIsOpen ? '0px' : '500px',
+      }}
+      transition={{
+        type: 'spring',
+        bounce: 0,
+        visualDuration: 0.25,
+      }}
+    >
+      <header>
+        <h2>
+          { title }
+        </h2>
 
-          <DefaultButton
-            icon
-            onClick={() => dispatch(sidebarOpen ? closeSidebar() : openSidebar())}
-          >
-            <BsX size={30} />
-          </DefaultButton>
-        </header>
+        <DefaultButton
+          icon
+          onClick={() => dispatch(sidebarSlice.toggleSidebar())}
+        >
+          <BsX size={30} />
+        </DefaultButton>
+      </header>
 
-        { children }
-      </StyledAside>
-    )
-    : null
+      { children }
+    </StyledAside>
+  )
 }

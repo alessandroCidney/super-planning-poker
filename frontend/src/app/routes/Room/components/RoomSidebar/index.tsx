@@ -4,8 +4,6 @@ import { DefaultButton } from '@/components/commons/DefaultButton'
 
 import * as roomSlice from '@/features/room/roomSlice'
 
-import { Sidebar } from '@/features/sidebar/Sidebar'
-
 import { UsCard } from './components/UsCard'
 import { UsForm } from './components/UsForm'
 
@@ -46,44 +44,40 @@ export function RoomSidebar() {
   }
 
   return (
-    <Sidebar
-      title='Tarefas'
-    >
-      <StyledContentContainer>
-        <StyledContentActions>
-          <DefaultButton
-            disabled={showForm}
-            block
-            onClick={() => setShowForm(true)}
-          >
-            Nova Tarefa
-          </DefaultButton>
-        </StyledContentActions>
+    <StyledContentContainer>
+      <StyledContentActions>
+        <DefaultButton
+          disabled={showForm}
+          block
+          onClick={() => setShowForm(true)}
+        >
+          Nova Tarefa
+        </DefaultButton>
+      </StyledContentActions>
 
-        <StyledUsList>
-          {
-            showForm && (
-              <UsForm
-                onSubmit={createStory}
-                onCancel={() => setShowForm(false)}
-              />
-            )
-          }
+      <StyledUsList>
+        {
+          showForm && (
+            <UsForm
+              onSubmit={createStory}
+              onCancel={() => setShowForm(false)}
+            />
+          )
+        }
 
-          {
-            Object.values(roomSelector.currentRoom?.stories ?? {}).map(storyData => (
-              <UsCard
-                key={storyData._id}
-                storyData={storyData}
-                removeStory={removeStory}
-                startVoting={startVoting}
-                concludeVoting={concludeVoting}
-                restartVoting={restartVoting}
-              />
-            ))
-          }
-        </StyledUsList>
-      </StyledContentContainer>
-    </Sidebar>
+        {
+          Object.values(roomSelector.currentRoom?.stories ?? {}).map(storyData => (
+            <UsCard
+              key={storyData._id}
+              storyData={storyData}
+              removeStory={removeStory}
+              startVoting={startVoting}
+              concludeVoting={concludeVoting}
+              restartVoting={restartVoting}
+            />
+          ))
+        }
+      </StyledUsList>
+    </StyledContentContainer>
   )
 }

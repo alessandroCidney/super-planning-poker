@@ -1,10 +1,16 @@
 import styled from 'styled-components'
 
-export const StyledAside = styled.aside`
+import { motion } from 'motion/react'
+
+export const StyledAside = styled(motion.aside)`
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
   flex-direction: column;
+
+  position: absolute;
+  top: 0;
+  right: 0;
 
   width: 500px;
   height: 100%;

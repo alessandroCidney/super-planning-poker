@@ -6,6 +6,8 @@ import { useRedux } from '@/hooks/useRedux'
 import * as roomSlice from '@/features/room/roomSlice'
 import { NotificationSnackbar } from '@/features/notifications/NotificationSnackbar'
 
+import { RoomLayout } from '@/components/layouts/RoomLayout'
+
 import { generateQuadraticEquation } from '@/utils/calc'
 
 import { RoomCodeCopyButton } from './components/RoomCodeCopyButton'
@@ -13,7 +15,7 @@ import { RoomSidebar } from './components/RoomSidebar'
 import { RoomHeader } from './components/RoomHeader'
 import { RoomTable } from './components/RoomTable'
 
-import { StyledMain, StyledSection, StyledCardsContainer, StyledPokerCard } from './styles'
+import { StyledCardsContainer, StyledPokerCard } from './styles'
 
 export function Room() {
   const navigate = useNavigate()
@@ -162,41 +164,40 @@ export function Room() {
   }, [navigate, roomId, roomSelector.currentRoom])
 
   return (
-    <StyledMain>
-      <StyledSection>
-        <RoomHeader />
+    <RoomLayout
+      sidebarTitle='Tarefas'
+      sidebarContent={<RoomSidebar />}
+    >
+      <RoomHeader />
 
-        <RoomTable />
+      <RoomTable />
 
-        <StyledCardsContainer
-          className={cardsContainerClassName}
-          onMouseEnter={() => setHoveringCards(true)}
-          onMouseLeave={() => setHoveringCards(false)}
-        >
-          {
-            positionedCardsData.map((cardData, cardDataIndex) => (
-              <StyledPokerCard
-                key={`cardDataIndex${cardDataIndex}`}
-                cardValue={cardData.value}
-                color={cardData.color}
-                width={`${cardWidth}px`}
+      <StyledCardsContainer
+        className={cardsContainerClassName}
+        onMouseEnter={() => setHoveringCards(true)}
+        onMouseLeave={() => setHoveringCards(false)}
+      >
+        {
+          positionedCardsData.map((cardData, cardDataIndex) => (
+            <StyledPokerCard
+              key={`cardDataIndex${cardDataIndex}`}
+              cardValue={cardData.value}
+              color={cardData.color}
+              width={`${cardWidth}px`}
 
-                $translateX={cardData.translateX}
-                $translateY={cardData.translateY}
-                $rotate={cardData.rotate}
+              $translateX={cardData.translateX}
+              $translateY={cardData.translateY}
+              $rotate={cardData.rotate}
 
-                onClick={() => saveVote(cardData.value)}
-              />
-            ))
-          }
-        </StyledCardsContainer>
-      
-        <NotificationSnackbar />
+              onClick={() => saveVote(cardData.value)}
+            />
+          ))
+        }
+      </StyledCardsContainer>
+    
+      <NotificationSnackbar />
 
-        <RoomCodeCopyButton />
-      </StyledSection>
-
-      <RoomSidebar />
-    </StyledMain>
+      <RoomCodeCopyButton />
+    </RoomLayout>
   )
 }
