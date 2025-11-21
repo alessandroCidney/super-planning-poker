@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { BsArrowLeft, BsArrowRight } from 'react-icons/bs'
+import { BsArrowLeft, BsArrowRight, BsX } from 'react-icons/bs'
 
 import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
@@ -14,37 +14,38 @@ import { DefaultButton } from '@/components/commons/DefaultButton'
 
 import { UserAvatar } from '../UserAvatar'
 
-import { StyledAvatarButton, StyledCardContainer, StyledCornerActions, StyledCardImage, StyledCardsList, StyledOverlay } from './style'
+import { StyledAvatarButton, StyledCardContainer, StyledCornerActions, StyledCardImage, StyledCardsList, StyledOverlay, StyledCloseButton } from './style'
 
 export function AvatarSelector() {
   const dispatch = useAppDispatch()
 
   const showAvatarSelector = useAppSelector(state => state.room.showAvatarSelector)
+  const currentUserAvatar = useAppSelector(state => state.room.currentRoom?.users[state.room.socketId ?? ''].avatar)
 
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  const imagesArr = useMemo(() => [
+    {
+      imageId: 'cat-king',
+      imagePath: catKingImg,
+    },
+    {
+      imageId: 'dog-warrior',
+      imagePath: dogWarriorImg,
+    },
+    {
+      imageId: 'bird-wizard',
+      imagePath: birdWizardImg,
+    },
+    {
+      imageId: 'bird-businessperson',
+      imagePath: birdBusinesspersonImg,
+    },
+  ], [])
+
+  const [selectedIndex, setSelectedIndex] = useState(imagesArr.findIndex(imageData => imageData.imageId === currentUserAvatar?.path))
 
   const imageWidth = 300
 
   const positionedImages = useMemo(() => {
-    const imagesArr = [
-      {
-        imageId: 'cat-king',
-        imagePath: catKingImg,
-      },
-      {
-        imageId: 'dog-warrior',
-        imagePath: dogWarriorImg,
-      },
-      {
-        imageId: 'bird-wizard',
-        imagePath: birdWizardImg,
-      },
-      {
-        imageId: 'bird-businessperson',
-        imagePath: birdBusinesspersonImg,
-      },
-    ]
-
     const translateStep = imageWidth + 100
 
     return imagesArr.map((imageData, imageOriginalIndex) => ({
@@ -53,7 +54,7 @@ export function AvatarSelector() {
       originalIndex: imageOriginalIndex,
       selected: imageOriginalIndex === selectedIndex,
     }))
-  }, [selectedIndex])
+  }, [imagesArr, selectedIndex])
 
   function incrementIndex() {
     if (selectedIndex + 1 < positionedImages.length) {
@@ -145,6 +146,15 @@ export function AvatarSelector() {
                   <BsArrowRight size={25} />
                 </DefaultButton>
               </StyledCornerActions>
+
+              <StyledCloseButton
+                color='transparent'
+                hoverColor='rgb(255, 255, 255, .1)'
+                icon
+                onClick={() => dispatch(roomSlice.toggleAvatarSelector())}
+              >
+                <BsX size={25} />
+              </StyledCloseButton>
             </StyledOverlay>
           )
         }

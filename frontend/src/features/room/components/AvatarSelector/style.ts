@@ -2,6 +2,8 @@ import styled from 'styled-components'
 
 import { motion } from 'motion/react'
 
+import { DefaultButton } from '@/components/commons/DefaultButton'
+
 export const StyledAvatarButton = styled.button`
   border: none;
 
@@ -91,4 +93,10 @@ export const StyledCornerActions = styled.div`
   button {
     z-index: 3;
   }
+`
+
+export const StyledCloseButton = styled(DefaultButton)`
+  position: absolute;
+  top: 10px;
+  right: 10px;
 `
