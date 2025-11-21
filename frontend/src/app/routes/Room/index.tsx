@@ -73,37 +73,37 @@ export function Room() {
       {
         value: 1,
         color: 'var(--theme-primary-darken-2-color)',
-        translateX: '0px',
-        translateY: '0px',
-        rotate: '0deg',
+        translateX: 0,
+        translateY: 0,
+        rotate: 0,
       },
       {
         value: 3,
         color: 'var(--theme-primary-darken-1-color)',
-        translateX: '0px',
-        translateY: '0px',
-        rotate: '0deg',
+        translateX: 0,
+        translateY: 0,
+        rotate: 0,
       },
       {
         value: 5,
         color: 'var(--theme-primary-color)',
-        translateX: '0px',
-        translateY: '0px',
-        rotate: '0deg',
+        translateX: 0,
+        translateY: 0,
+        rotate: 0,
       },
       {
         value: 8,
         color: 'var(--theme-primary-lighten-1-color)',
-        translateX: '0px',
-        translateY: '0px',
-        rotate: '0deg',
+        translateX: 0,
+        translateY: 0,
+        rotate: 0,
       },
       {
         value: 13,
         color: 'var(--theme-primary-lighten-2-color)',
-        translateX: '0px',
-        translateY: '0px',
-        rotate: '0deg',
+        translateX: 0,
+        translateY: 0,
+        rotate: 0,
       },
     ]
 
@@ -129,9 +129,9 @@ export function Room() {
 
       return {
         ...item,
-        translateX: `${finalTranslateX}px`,
-        translateY: `${finalTranslateY}px`,
-        rotate: `${finalRotate}deg`,
+        translateX: finalTranslateX,
+        translateY: finalTranslateY,
+        rotate: finalRotate,
       }
     })
 
@@ -185,9 +185,25 @@ export function Room() {
               color={cardData.color}
               width={`${cardWidth}px`}
 
-              $translateX={cardData.translateX}
-              $translateY={cardData.translateY}
-              $rotate={cardData.rotate}
+              initial={{
+                translateX: cardData.translateX,
+                translateY: cardData.translateY,
+                rotate: cardData.rotate,
+              }}
+
+              animate={{
+                translateX: cardData.translateX,
+                translateY: cardData.translateY,
+                rotate: cardData.rotate,
+              }}
+
+              whileHover={{
+                translateX: cardData.translateX,
+                translateY: cardData.translateY - 20,
+                rotate: cardData.rotate,
+
+                filter: 'brightness(0.9)',
+              }}
 
               onClick={() => saveVote(cardData.value)}
             />

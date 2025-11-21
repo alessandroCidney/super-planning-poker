@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { BsFillTrash3Fill, BsCircleFill, BsArrowCounterclockwise } from 'react-icons/bs'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
@@ -67,11 +67,24 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
     return Object.keys(maxOccurrenceAnalysis).map(item => parseInt(item))
   }, [storyData.votes])
 
-  if (storyData.votingStatus === 'not_started') {
+  interface AnimatedContainerProps {
+    children: ReactNode
+  }
+
+  function AnimatedContainer({ children }: AnimatedContainerProps) {
     return (
       <StyledCardContainer
         className={customClassName}
+        layout
       >
+        { children }
+      </StyledCardContainer>
+    )
+  }
+
+  if (storyData.votingStatus === 'not_started') {
+    return (
+      <AnimatedContainer>
         <StyledHeader>
           { storyData.title }
         </StyledHeader>
@@ -92,15 +105,13 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
             <BsFillTrash3Fill />
           </DefaultButton>
         </StyledCardActions>
-      </StyledCardContainer>
+      </AnimatedContainer>
     )
   }
 
   if (storyData.votingStatus === 'in_progress') {
     return (
-      <StyledCardContainer
-        className={customClassName}
-      >
+      <AnimatedContainer>
         <StyledHeader>
           { storyData.title }
         </StyledHeader>
@@ -121,14 +132,12 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
             Concluir votação
           </DefaultButton>
         </StyledCardActions>
-      </StyledCardContainer>
+      </AnimatedContainer>
     )
   }
 
   return (
-    <StyledCardContainer
-      className={customClassName}
-    >
+    <AnimatedContainer>
       <StyledHeader>
         { storyData.title }
       </StyledHeader>
@@ -144,6 +153,14 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
           }
         </StyledVotingResultContainer>
 
+        <DefaultButton
+          color='var(--theme-primary-lighten-2-color)'
+          icon
+          onClick={() => removeStory(storyData._id)}
+        >
+          <BsFillTrash3Fill />
+        </DefaultButton>
+
         <FloatingActions>
           <DefaultButton
             color='var(--theme-primary-lighten-2-color)'
@@ -154,6 +171,6 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
           </DefaultButton>
         </FloatingActions>
       </StyledCardActions>
-    </StyledCardContainer>
+    </AnimatedContainer>
   )
 }

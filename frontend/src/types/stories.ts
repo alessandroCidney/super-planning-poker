@@ -4,4 +4,6 @@ export interface Story {
 
   votingStatus: 'not_started' | 'in_progress' | 'concluded'
   votes: Record<string, number>
+
+  createdAt: number
 }

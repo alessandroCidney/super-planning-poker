@@ -1,6 +1,8 @@
 import styled from 'styled-components'
 
-export const StyledCardContainer = styled.article`
+import { motion } from 'motion/react'
+
+export const StyledCardContainer = styled(motion.article)`
   position: relative;
 
   display: flex;

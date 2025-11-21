@@ -1,11 +1,12 @@
 import styled from 'styled-components'
 
+import { motion } from 'motion/react'
+
 interface StyledCircleProps {
-  $translateX: number
-  $translateY: number
+  $backgroundImage: string
 }
 
-export const StyledUserContainer = styled.div<StyledCircleProps>`
+export const StyledUserContainer = styled(motion.div)<StyledCircleProps>`
   position: absolute;
 
   display: flex;
@@ -17,11 +18,9 @@ export const StyledUserContainer = styled.div<StyledCircleProps>`
 
   border-radius: 50%;
 
-  background-color: var(--theme-primary-color);
-
-  transform: translate(${props => props.$translateX ? `${props.$translateX}px` : '0px'}, ${props => props.$translateY ? `${props.$translateY}px` : '0px'});
-
-  transition: all 1s ease-in-out;
+  background-image: ${props => `url('${props.$backgroundImage}')`};
+  background-size: 100%;
+  background-position: center 67px;
 
   &.user-avatar--disabled {
     filter: saturate(0);

@@ -2,25 +2,9 @@ import styled from 'styled-components'
 
 import { PokerCard } from './components/PokerCard'
 
-interface StyledPokerCardProps {
-  $translateX: string
-  $translateY: string
-  $rotate: string
-}
-
-export const StyledPokerCard = styled(PokerCard)<StyledPokerCardProps>`
+export const StyledPokerCard = styled(PokerCard)`
   position: absolute;
   top: 0;
-
-  transform: translate(${props => props.$translateX}, ${props => props.$translateY}) rotate(${props => props.$rotate});
-
-  transition: all .1s linear;
-
-  &:hover {
-    transform: translate(${props => props.$translateX}, calc(${props => props.$translateY} - 20px)) rotate(${props => props.$rotate});
-
-    filter: brightness(.9);
-  }
 `
 
 export const StyledCardsContainer = styled.div`

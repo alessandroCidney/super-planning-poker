@@ -1,4 +1,6 @@
 import { useMemo } from 'react'
+
+import { AnimatePresence } from 'motion/react'
 import { BsCheckCircleFill, BsExclamationCircleFill, BsX } from 'react-icons/bs'
 
 import * as notificationsSlice from '@/features/notifications/notificationsSlice'
@@ -36,37 +38,56 @@ export function NotificationSnackbar() {
     return styleDataObject[notificationsSelector.type]
   }, [notificationsSelector.type])
 
-  return notificationsSelector.active
-    ? (
-      <StyledFigure
-        $backgroundColor={dynamicStyleData.backgroundColor}
-      >
-        <div>
-          { dynamicStyleData.icon }
-        </div>
+  return (
+    <AnimatePresence>
+      {
+        notificationsSelector.active
+          ? (
+            <StyledFigure
+              $backgroundColor={dynamicStyleData.backgroundColor}
+              initial={{
+                y: 100,
+                opacity: 0,
+              }}
+              animate={{
+                y: 0,
+                opacity: 1,
+              }}
+              exit={{
+                x: 100,
+                y: 0,
+                opacity: 0,
+              }}
+            >
+              <div>
+                { dynamicStyleData.icon }
+              </div>
 
-        <StyledContentContainer>
-          <figcaption>
-            { notificationsSelector.title }
-          </figcaption>
+              <StyledContentContainer>
+                <figcaption>
+                  { notificationsSelector.title }
+                </figcaption>
 
-          <p>
-            { notificationsSelector.description }
-          </p>
-        </StyledContentContainer>
+                <p>
+                  { notificationsSelector.description }
+                </p>
+              </StyledContentContainer>
 
-        <FloatingActions>
-          <DefaultButton
-            color={dynamicStyleData.closeButtonColor}
-            hoverColor={dynamicStyleData.closeButtonHoverColor}
-            iconSize='40px'
-            icon
-            onClick={() => dispatch(notificationsSlice.hideMessage())}
-          >
-            <BsX size={25} />
-          </DefaultButton>
-        </FloatingActions>
-      </StyledFigure>
-    )
-    : null
+              <FloatingActions>
+                <DefaultButton
+                  color={dynamicStyleData.closeButtonColor}
+                  hoverColor={dynamicStyleData.closeButtonHoverColor}
+                  iconSize='40px'
+                  icon
+                  onClick={() => dispatch(notificationsSlice.hideMessage())}
+                >
+                  <BsX size={25} />
+                </DefaultButton>
+              </FloatingActions>
+            </StyledFigure>
+          )
+          : null
+      }
+    </AnimatePresence>
+  )
 }

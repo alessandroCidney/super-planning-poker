@@ -1,11 +1,13 @@
 import styled from 'styled-components'
 
+import { motion } from 'motion/react'
+
 interface StyleButtonProps {
   $width?: string
   $color?: string
 }
 
-export const StyledButton = styled.button<StyleButtonProps>`
+export const StyledButton = styled(motion.button)<StyleButtonProps>`
   width: ${props => props.$width || '120px'};
 
   aspect-ratio: 2 / 3;

@@ -1,10 +1,12 @@
 import styled from 'styled-components'
 
+import { motion } from 'motion/react'
+
 interface StyledFigureProps {
   $backgroundColor?: string
 }
 
-export const StyledFigure = styled.figure<StyledFigureProps>`
+export const StyledFigure = styled(motion.figure)<StyledFigureProps>`
   display: flex;
   align-items: center;
   justify-content: flex-start;

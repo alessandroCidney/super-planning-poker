@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+
+import { AnimatePresence } from 'motion/react'
 import { BsArrowLeft, BsArrowRight, BsX } from 'react-icons/bs'
 
 import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
@@ -91,10 +93,20 @@ export function AvatarSelector() {
         <UserAvatar />
       </StyledAvatarButton>
 
-      <div>
+      <AnimatePresence>
         {
           showAvatarSelector && (
-            <StyledOverlay>
+            <StyledOverlay
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              exit={{
+                opacity: 0,
+              }}
+            >
               <StyledCardsList>
                 {
                   positionedImages.map((imageData) => (
@@ -158,7 +170,7 @@ export function AvatarSelector() {
             </StyledOverlay>
           )
         }
-      </div>
+      </AnimatePresence>
     </div>
   )
 }

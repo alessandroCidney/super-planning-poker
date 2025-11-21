@@ -1,7 +1,8 @@
-import type React from 'react'
+import type { HTMLMotionProps } from 'motion/react'
+
 import { StyledButton } from './styles'
 
-interface PokerCardProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface PokerCardProps extends HTMLMotionProps<'button'> {
   cardValue: number
   width?: string
   color?: string

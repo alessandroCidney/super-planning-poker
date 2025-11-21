@@ -12,7 +12,7 @@ export const StyledAvatarButton = styled.button`
   cursor: pointer;
 `
 
-export const StyledOverlay = styled.div`
+export const StyledOverlay = styled(motion.div)`
   z-index: 10;
 
   display: flex;

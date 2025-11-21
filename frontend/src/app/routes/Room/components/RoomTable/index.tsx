@@ -70,12 +70,14 @@ export function RoomTable() {
         <StyledTable>
           {
             positionedUsers
-              .map(positionedUser => <UserAvatar
-                key={positionedUser.user._id}
-                user={positionedUser.user}
-                coordinates={positionedUser.coordinates}
-                disabled={!!votingStory && positionedUser.user._id in votingStory.votes}
-              />)
+              .map(positionedUser => (
+                <UserAvatar
+                  key={positionedUser.user._id}
+                  user={positionedUser.user}
+                  coordinates={positionedUser.coordinates}
+                  disabled={!!votingStory && positionedUser.user._id in votingStory.votes}
+                />
+              ))
           }
 
           {
