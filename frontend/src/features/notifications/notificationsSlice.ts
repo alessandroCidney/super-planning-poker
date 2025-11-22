@@ -4,7 +4,7 @@ export interface NotificationsState {
   active: boolean
   title: string
   description: string
-  type: 'success' | 'error'
+  type: 'success' | 'error' | 'info'
 }
 
 const initialState: NotificationsState = {

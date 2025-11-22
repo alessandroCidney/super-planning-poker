@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router'
 import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
 import * as roomSlice from '@/features/room/roomSlice'
-import { NotificationSnackbar } from '@/features/notifications/NotificationSnackbar'
 
 import { RoomLayout } from '@/components/layouts/RoomLayout'
 
@@ -207,8 +206,6 @@ export function Room() {
           ))
         }
       </StyledCardsContainer>
-    
-      <NotificationSnackbar />
 
       <RoomCodeCopyButton />
     </RoomLayout>

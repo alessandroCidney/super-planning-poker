@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
+
+import { AxiosError } from 'axios'
 
 import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
+import { HomeLayout } from '@/components/layouts/HomeLayout'
 
-import { createRoom, joinRoom } from '@/features/room/roomSlice'
+import { useNotifications } from '@/features/notifications/hooks/useNotifications'
+import * as roomSlice from '@/features/room/roomSlice'
 import { useAvatars } from '@/features/room/hooks/useAvatars'
 
-import { StyledMain, Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions } from './styles'
+import { api } from '@/utils/api'
+
+import { Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions } from './styles'
+
+let loadedOnce = false
 
 export function Home() {
   const navigate = useNavigate()
@@ -20,16 +28,26 @@ export function Home() {
   const [searchParams] = useSearchParams()
 
   const { getRandomAvatar } = useAvatars()
+  const notifications = useNotifications()
 
   const [enterRoomPayload, setEnterRoomPayload] = useState({
-    code: searchParams.get('room') ?? '',
+    code: '',
     name: '',
   })
   
-  const [formStep, setFormStep] = useState<'room' | 'user'>(searchParams.get('room') ? 'user': 'room')
+  const [formStep, setFormStep] = useState<'room' | 'user'>('room')
 
-  function handleNextStep(event: React.SyntheticEvent) {
-    event.preventDefault()
+  async function handleStartJoinRoom() {
+    if (enterRoomPayload.code) {
+      setFormStep('user')
+    }
+  }
+
+  async function handleStartCreateRoom() {
+    setEnterRoomPayload({
+      code: '',
+      name: '',
+    })
 
     setFormStep('user')
   }
@@ -38,7 +56,7 @@ export function Home() {
     event.preventDefault()
 
     if (enterRoomPayload.code) {
-      dispatch(joinRoom({
+      dispatch(roomSlice.joinRoom({
         roomId: enterRoomPayload.code,
         userData: {
           name: enterRoomPayload.name,
@@ -50,7 +68,7 @@ export function Home() {
         },
       }))
     } else {
-      dispatch(createRoom({
+      dispatch(roomSlice.createRoom({
         userData: {
           name: enterRoomPayload.name,
 
@@ -62,19 +80,77 @@ export function Home() {
       }))
     }
   }
+
+  const checkIfRoomExists = useCallback(async (roomId: string) => {
+    try {
+      const response = await api.get(`/rooms/${roomId}`)
+
+      console.log('response', response.data)
+
+      return true
+    } catch (err) {
+      if (err instanceof AxiosError && err.response?.status === 404) {
+        return false
+      }
+
+      throw err
+    }
+  }, [])
+
+  const urlRoomCheck = useCallback(async () => {
+    const urlRoomId = searchParams.get('room')
+
+    if (urlRoomId) {
+      const roomExists = await checkIfRoomExists(urlRoomId)
+
+      if (roomExists) {
+        setEnterRoomPayload({
+          code: urlRoomId,
+          name: '',
+        })
+
+        setFormStep('user')
+      } else {
+        notifications.showMessage({
+          title: 'Sala não encontrada!',
+          description: 'A sala não existe ou foi removida.',
+          type: 'info',
+        })
+
+        setEnterRoomPayload({
+          code: '',
+          name: '',
+        })
+
+        setFormStep('room')
+
+        navigate('/')
+          
+        return
+      }
+    }
+  }, [checkIfRoomExists, navigate, notifications, searchParams])
   
   useEffect(() => {
     if (roomSelector.currentRoom) {
       navigate(`/rooms/${roomSelector.currentRoom._id}`)
+
+      return
     }
-  }, [navigate, roomSelector.currentRoom])
+
+    if (!loadedOnce) {
+      loadedOnce = true
+
+      urlRoomCheck()
+    }
+  }, [urlRoomCheck, navigate, roomSelector.currentRoom])
 
   return (
-    <StyledMain>
+    <HomeLayout>
       {
         formStep === 'room'
           ? (
-            <Form onSubmit={handleNextStep}>
+            <Form onSubmit={e => e.preventDefault()}>
               <h2>
                 Entre em uma sala
               </h2>
@@ -96,7 +172,7 @@ export function Home() {
                 color='var(--theme-primary-darken-2-color)'
                 hoverColor='var(--theme-primary-darken-3-color)'
                 block
-                type='submit'
+                onClick={handleStartJoinRoom}
               >
                 Entrar
               </DefaultButton>
@@ -109,7 +185,7 @@ export function Home() {
                 color='var(--theme-primary-darken-2-color)'
                 hoverColor='var(--theme-primary-darken-3-color)'
                 block
-                type='submit'
+                onClick={handleStartCreateRoom}
               >
                 Crie uma nova
               </DefaultButton>
@@ -122,7 +198,11 @@ export function Home() {
               </h2>
 
               <p>
-                Entrando na sala { enterRoomPayload.code }
+                {
+                  enterRoomPayload.code
+                    ? <>Entrando na sala { enterRoomPayload.code }</>
+                    : <>Criando nova sala</>
+                }
               </p>
 
               <FormField>
@@ -161,6 +241,6 @@ export function Home() {
             </Form>
           )
       }
-    </StyledMain>
+    </HomeLayout>
   )
 }

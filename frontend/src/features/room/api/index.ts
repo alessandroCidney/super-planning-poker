@@ -6,6 +6,8 @@ import type { RootState } from '@/app/store'
 
 import type { SocketResponse } from '@/types/socket'
 
+import { AppError } from '@/utils/error'
+
 import { setupRoomHandlers } from './room'
 import { setupStoryHandlers } from './story'
 import { setupUserHandlers } from './user'
@@ -54,7 +56,7 @@ export const setupSocketMiddleware: Middleware<{}, RootState> = (store) => {
     })
 
     if (response.error) {
-      throw new Error(response.message)
+      throw new AppError(response.message ?? 'Internal server error', response.status)
     }
 
     return response

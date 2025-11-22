@@ -23,6 +23,13 @@ export function NotificationSnackbar() {
         closeButtonHoverColor: 'var(--theme-error-darken-1-color)',
       },
 
+      info: {
+        icon: <BsExclamationCircleFill size={40} />,
+        backgroundColor: 'var(--theme-primary-darken-2-color)',
+        closeButtonColor: 'var(--theme-primary-darken-3-color)',
+        closeButtonHoverColor: 'var(--theme-primary-darken-3-color)',
+      },
+
       success: {
         icon: <BsCheckCircleFill size={40} />,
         backgroundColor: undefined,

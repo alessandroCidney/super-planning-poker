@@ -2,13 +2,16 @@ import type { Socket } from 'socket.io-client'
 
 import type { Middleware, PayloadAction } from '@reduxjs/toolkit'
 
-import * as roomSlice from '@/features/room/roomSlice'
-
 import type { RootState } from '@/app/store'
+
+import * as roomSlice from '@/features/room/roomSlice'
+import * as notificationsSlice from '@/features/notifications/notificationsSlice'
 
 import type { User } from '@/types/users'
 import type { Room } from '@/types/rooms'
 import type { SocketResponse } from '@/types/socket'
+
+import { AppError } from '@/utils/error'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type MiddlewareType = Middleware<{}, RootState>
@@ -38,19 +41,33 @@ export function setupRoomHandlers(
   }
 
   async function joinRoom(roomId: string, userData: Partial<User>) {
-    const socket = await makeSureIsConnected()
+    try {
+      const socket = await makeSureIsConnected()
 
-    const response = await emitMessage<Room>('room:join', {
-      roomId,
-      userData,
-    })
+      const response = await emitMessage<Room>('room:join', {
+        roomId,
+        userData,
+      })
 
-    store.dispatch({
-      type: 'room/setCurrentRoom',
-      payload: response.data,
-    })
+      store.dispatch({
+        type: 'room/setCurrentRoom',
+        payload: response.data,
+      })
 
-    socket.on('room:updated', updateRoom)
+      socket.on('room:updated', updateRoom)
+    } catch (err) {
+      if (err instanceof AppError && err.status === 404) {
+        store.dispatch(notificationsSlice.showMessage({
+          title: 'Sala não encontrada!',
+          description: 'A sala não existe ou foi removida.',
+          type: 'info',
+        }))
+    
+        setTimeout(() => {
+          store.dispatch(notificationsSlice.hideMessage())
+        }, 3000)
+      }
+    }
   }
 
   function updateRoom(updatedRoom: Room) {

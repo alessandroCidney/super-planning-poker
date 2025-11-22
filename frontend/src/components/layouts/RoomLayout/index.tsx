@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { useAppSelector } from '@/app/storeHooks'
 
 import { Sidebar } from '@/features/sidebar/Sidebar'
+import { NotificationSnackbar } from '@/features/notifications/NotificationSnackbar'
 
 import { StyledMain, StyledSection } from './style'
 import { LayoutGroup } from 'motion/react'
@@ -29,6 +30,8 @@ export function RoomLayout({ children, sidebarContent, sidebarTitle }: RoomLayou
           }}
         >
           { children }
+              
+          <NotificationSnackbar />
         </StyledSection>
 
         <Sidebar
