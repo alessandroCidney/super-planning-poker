@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { useParams } from 'react-router'
 import { BsCheck, BsCopy } from 'react-icons/bs'
 
-import { useNotifications } from '@/features/notifications/hooks/useNotifications'
+import { useAppSelector } from '@/app/storeHooks'
 
-import { useRedux } from '@/hooks/useRedux'
+import { useNotifications } from '@/features/notifications/hooks/useNotifications'
 
 import { copyText } from '@/utils/text'
 
@@ -14,8 +14,6 @@ export function RoomCodeCopyButton() {
   const { roomId } = useParams()
 
   const notifications = useNotifications()
-
-  const { useAppSelector } = useRedux()
 
   const roomSelector = useAppSelector(state => state.room)
 

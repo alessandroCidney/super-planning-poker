@@ -11,7 +11,7 @@ export const StyledCard = styled.div<StyledCardProps>`
   transform: rotate(${props => props.$rotate ?? 0}deg);
 
   width: 70px;
-  aspect-ratio: 2 / 3;
+  height: 105px;
 
   background-color: #ccc;
 

@@ -7,18 +7,23 @@ export const StyledTableContainer = styled.div`
   align-items: center;
   justify-content: center;
 
-  height: calc(100% - 80px - 200px);
+  height: calc(100vh - 80px - 210px);
 `
 
-export const StyledTable = styled.div`
+interface StyledTableProps {
+  $width: number
+  $height: number
+}
+
+export const StyledTable = styled.div<StyledTableProps>`
   position: relative;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  width: 820px;
-  height: 440px;
+  width: ${props => props.$width}px;
+  height: ${props => props.$height}px;
   
   background-color: #f1f1f1;
 

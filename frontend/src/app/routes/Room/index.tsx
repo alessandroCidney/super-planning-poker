@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
-import { useRedux } from '@/hooks/useRedux'
+import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
 import * as roomSlice from '@/features/room/roomSlice'
 import { NotificationSnackbar } from '@/features/notifications/NotificationSnackbar'
@@ -21,10 +21,7 @@ export function Room() {
   const navigate = useNavigate()
   const { roomId } = useParams()
 
-  const { useAppDispatch, useAppSelector } = useRedux() 
-
   const dispatch = useAppDispatch()
-
   const roomSelector = useAppSelector(state => state.room)
 
   const [hoveringCards, setHoveringCards] = useState(false)

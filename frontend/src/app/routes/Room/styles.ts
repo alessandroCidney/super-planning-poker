@@ -14,12 +14,12 @@ export const StyledCardsContainer = styled.div`
 
   position: absolute;
 
-  bottom: 20px;
+  bottom: 0px;
   left: 50%;
   transform: translateX(-50%);
 
   width: 100%;
-  height: 200px;
+  height: 210px;
 
   &.cards-container--disabled {
     pointer-events: none;

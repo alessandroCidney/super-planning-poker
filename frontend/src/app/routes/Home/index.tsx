@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 
+import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
+
 import { DefaultButton } from '@/components/commons/DefaultButton'
 
 import { createRoom, joinRoom } from '@/features/room/roomSlice'
-
-import { useRedux } from '@/hooks/useRedux'
 
 import { StyledMain, Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions } from './styles'
 
 export function Home() {
   const navigate = useNavigate()
-
-  const { useAppSelector, useAppDispatch } = useRedux()
 
   const dispatch = useAppDispatch()
 

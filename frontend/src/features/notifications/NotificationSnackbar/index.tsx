@@ -3,19 +3,15 @@ import { useMemo } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { BsCheckCircleFill, BsExclamationCircleFill, BsX } from 'react-icons/bs'
 
+import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 import * as notificationsSlice from '@/features/notifications/notificationsSlice'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 
-import { useRedux } from '@/hooks/useRedux'
-
 import { FloatingActions, StyledFigure, StyledContentContainer } from './styles'
 
 export function NotificationSnackbar() {
-  const { useAppSelector, useAppDispatch } = useRedux()
-
   const dispatch = useAppDispatch()
-  
   const notificationsSelector = useAppSelector(state => state.notifications)
 
   const dynamicStyleData = useMemo(() => {

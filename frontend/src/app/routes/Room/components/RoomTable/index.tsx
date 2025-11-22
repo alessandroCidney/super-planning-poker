@@ -1,6 +1,8 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 
-import { useRedux } from '@/hooks/useRedux'
+import { useAppSelector } from '@/app/storeHooks'
+
+import { useElementDimensions } from '@/hooks/useElementDimensions'
 
 import { calculateEllipseEquidistantPointsCoordinates } from '@/utils/calc'
 
@@ -10,14 +12,39 @@ import { StackOfCards } from './components/StackOfCards'
 import { StyledTable, StyledTableContainer } from './styles'
 
 export function RoomTable() {
-  const { useAppSelector } = useRedux()
-
   const roomSelector = useAppSelector(state => state.room)
 
-  const tableDimensions = {
-    width: 820,
-    height: 440,
-  }
+  const styledTableContainerRef = useRef<HTMLDivElement>(null)
+
+  const tableContainerDimensions = useElementDimensions(styledTableContainerRef)
+
+  const tableDimensions = useMemo(() => {
+    const baseTableDimensions = {
+      width: 820,
+      height: 440,
+    }
+
+    const baseAspectRatio = baseTableDimensions.width / baseTableDimensions.height
+    
+    if (tableContainerDimensions) {
+      const enableResize = baseTableDimensions.width > 0.8 * tableContainerDimensions.width
+        || baseTableDimensions.height > 0.8 * tableContainerDimensions.height
+
+      if (enableResize && tableContainerDimensions.width / baseAspectRatio <= tableContainerDimensions.height) {
+        return {
+          width: tableContainerDimensions.width * 0.8,
+          height: tableContainerDimensions.width * 0.8 / baseAspectRatio,
+        }
+      } else if (enableResize) {
+        return {
+          width: tableContainerDimensions.height * 0.8 * baseAspectRatio,
+          height: tableContainerDimensions.height * 0.8,
+        }
+      }
+    }
+
+    return baseTableDimensions
+  }, [tableContainerDimensions])
 
   const positionedUsers = useMemo(
     () => {
@@ -66,8 +93,13 @@ export function RoomTable() {
 
   return roomSelector.currentRoom
     ? (
-      <StyledTableContainer>
-        <StyledTable>
+      <StyledTableContainer
+        ref={styledTableContainerRef}
+      >
+        <StyledTable
+          $width={tableDimensions.width}
+          $height={tableDimensions.height}
+        >
           {
             positionedUsers
               .map(positionedUser => (

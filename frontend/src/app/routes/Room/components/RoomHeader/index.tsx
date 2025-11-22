@@ -1,18 +1,16 @@
 import { BsLayoutSidebarInsetReverse } from 'react-icons/bs'
 
+import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
+
 import { DefaultButton } from '@/components/commons/DefaultButton'
 
 import * as roomSlice from '@/features/room/roomSlice'
 import * as sidebarSlice from '@/features/sidebar/sidebarSlice'
 import { AvatarSelector } from '@/features/room/components/AvatarSelector'
 
-import { useRedux } from '@/hooks/useRedux'
-
 import { StyledHeader } from './styles'
 
 export function RoomHeader() {
-  const { useAppDispatch, useAppSelector } = useRedux()
-
   const dispatch = useAppDispatch()
 
   const roomSelector = useAppSelector(state => state.room)
