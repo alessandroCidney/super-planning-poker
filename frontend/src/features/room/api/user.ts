@@ -37,7 +37,7 @@ export function setupUserHandlers(
     
     setTimeout(() => {
       store.dispatch(notificationsSlice.hideMessage())
-    }, 3000)
+    }, 5000)
   }
 
   switch (action.type) {

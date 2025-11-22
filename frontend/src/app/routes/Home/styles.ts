@@ -37,9 +37,14 @@ export const FieldInput = styled.input`
 
   text-align: center;
   font-size: 1.5rem;
+  font-weight: 600;
 
   &:focus {
-    outline: 4px solid var(--theme-primary-color);
+    outline: 4px solid var(--theme-primary-darken-2-color);
+  }
+
+  &::placeholder {
+    color: #d1d1d1;
   }
 `
 
@@ -67,4 +72,11 @@ export const FormActions = styled.div`
   button:not(:last-of-type) {
     margin-bottom: 10px;
   }
+`
+
+export const FormErrorMessage = styled.div`
+  margin-bottom: 10px;
+
+  color: var(--theme-error-color);
+  font-weight: 600;
 `

@@ -14,9 +14,8 @@ import { useAvatars } from '@/features/room/hooks/useAvatars'
 
 import { api } from '@/utils/api'
 
-import { Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions } from './styles'
-
-let loadedOnce = false
+import { Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions, FormErrorMessage } from './styles'
+import { allFormRules, useFormRules } from '@/hooks/useFormRules'
 
 export function Home() {
   const navigate = useNavigate()
@@ -25,29 +24,40 @@ export function Home() {
 
   const roomSelector = useAppSelector(state => state.room)
 
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const { getRandomAvatar } = useAvatars()
   const notifications = useNotifications()
 
-  const [enterRoomPayload, setEnterRoomPayload] = useState({
-    code: '',
-    name: '',
+  const roomCodeFieldControls = useFormRules({
+    initialValue: '',
+    selectedRules: [
+      allFormRules.requiredString,
+      allFormRules.maxLength(36),
+    ],
+  })
+
+  const nameFieldControls = useFormRules({
+    initialValue: '',
+    selectedRules: [
+      allFormRules.requiredString,
+      allFormRules.maxLength(300),
+    ],
   })
   
   const [formStep, setFormStep] = useState<'room' | 'user'>('room')
 
   async function handleStartJoinRoom() {
-    if (enterRoomPayload.code) {
+    const validationResult = roomCodeFieldControls.validate()
+
+    if (validationResult.valid) {
       setFormStep('user')
     }
   }
 
   async function handleStartCreateRoom() {
-    setEnterRoomPayload({
-      code: '',
-      name: '',
-    })
+    roomCodeFieldControls.setValue('')
+    nameFieldControls.setValue('')
 
     setFormStep('user')
   }
@@ -55,11 +65,15 @@ export function Home() {
   async function handleFinish(event: React.SyntheticEvent) {
     event.preventDefault()
 
-    if (enterRoomPayload.code) {
+    if (!nameFieldControls.validate().valid) {
+      return
+    }
+
+    if (roomCodeFieldControls.value) {
       dispatch(roomSlice.joinRoom({
-        roomId: enterRoomPayload.code,
+        roomId: roomCodeFieldControls.value,
         userData: {
-          name: enterRoomPayload.name,
+          name: nameFieldControls.value,
 
           avatar: {
             type: 'internal_photo',
@@ -70,7 +84,7 @@ export function Home() {
     } else {
       dispatch(roomSlice.createRoom({
         userData: {
-          name: enterRoomPayload.name,
+          name: nameFieldControls.value,
 
           avatar: {
             type: 'internal_photo',
@@ -83,9 +97,7 @@ export function Home() {
 
   const checkIfRoomExists = useCallback(async (roomId: string) => {
     try {
-      const response = await api.get(`/rooms/${roomId}`)
-
-      console.log('response', response.data)
+      await api.get(`/rooms/${roomId}`)
 
       return true
     } catch (err) {
@@ -104,12 +116,17 @@ export function Home() {
       const roomExists = await checkIfRoomExists(urlRoomId)
 
       if (roomExists) {
-        setEnterRoomPayload({
-          code: urlRoomId,
-          name: '',
-        })
+        const roomIdValidationResult = roomCodeFieldControls.validate(urlRoomId)
 
-        setFormStep('user')
+        if (roomIdValidationResult.valid) {
+          roomCodeFieldControls.setValue(urlRoomId)
+
+          setFormStep('user')
+        } else {
+          roomCodeFieldControls.setValue('')
+
+          setFormStep('room')
+        }
       } else {
         notifications.showMessage({
           title: 'Sala não encontrada!',
@@ -117,19 +134,16 @@ export function Home() {
           type: 'info',
         })
 
-        setEnterRoomPayload({
-          code: '',
-          name: '',
-        })
+        roomCodeFieldControls.setValue('')
+
+        setSearchParams({})
 
         setFormStep('room')
-
-        navigate('/')
           
         return
       }
     }
-  }, [checkIfRoomExists, navigate, notifications, searchParams])
+  }, [checkIfRoomExists, notifications, roomCodeFieldControls, searchParams, setSearchParams])
   
   useEffect(() => {
     if (roomSelector.currentRoom) {
@@ -138,11 +152,7 @@ export function Home() {
       return
     }
 
-    if (!loadedOnce) {
-      loadedOnce = true
-
-      urlRoomCheck()
-    }
+    urlRoomCheck()
   }, [urlRoomCheck, navigate, roomSelector.currentRoom])
 
   return (
@@ -162,11 +172,19 @@ export function Home() {
 
                 <FieldInput
                   type='text'
-                  placeholder='XXXXXX'
-                  value={enterRoomPayload.code}
-                  onChange={(e) => setEnterRoomPayload({ ...enterRoomPayload, code: e.target.value })}
+                  placeholder='Código da Sala'
+                  value={roomCodeFieldControls.value}
+                  onChange={(e) => roomCodeFieldControls.setValue(e.target.value)}
                 />
               </FormField>
+
+              {
+                roomCodeFieldControls.errorMessage && (
+                  <FormErrorMessage>
+                    { roomCodeFieldControls.errorMessage }
+                  </FormErrorMessage>
+                )
+              }
 
               <DefaultButton
                 color='var(--theme-primary-darken-2-color)'
@@ -199,8 +217,8 @@ export function Home() {
 
               <p>
                 {
-                  enterRoomPayload.code
-                    ? <>Entrando na sala { enterRoomPayload.code }</>
+                  roomCodeFieldControls.value
+                    ? <>Entrando na sala { roomCodeFieldControls.value }</>
                     : <>Criando nova sala</>
                 }
               </p>
@@ -213,10 +231,18 @@ export function Home() {
                 <FieldInput
                   type='text'
                   placeholder='Potato Chips'
-                  value={enterRoomPayload.name}
-                  onChange={(e) => setEnterRoomPayload({ ...enterRoomPayload, name: e.target.value })}
+                  value={nameFieldControls.value}
+                  onChange={(e) => nameFieldControls.setValue(e.target.value)}
                 />
               </FormField>
+
+              {
+                nameFieldControls.errorMessage && (
+                  <FormErrorMessage>
+                    { nameFieldControls.errorMessage }
+                  </FormErrorMessage>
+                )
+              }
 
               <FormActions>
                 <DefaultButton

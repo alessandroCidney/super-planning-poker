@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { NotificationSnackbar } from '@/features/notifications/NotificationSnackbar'
+import { NotificationSnackbar } from '@/features/notifications/components/NotificationSnackbar'
 
 import { StyledMain } from './styles'
 

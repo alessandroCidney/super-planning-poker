@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 
-import * as sidebarSlice from '../sidebarSlice'
+import * as sidebarSlice from '../../sidebarSlice'
 
 import { StyledAside } from './styles'
 

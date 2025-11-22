@@ -23,6 +23,7 @@ export function setupRoomHandlers(
   action: PayloadAction<unknown>,
   makeSureIsConnected: () => Promise<Socket>,
   emitMessage: <T>(type: string, payload: unknown) => Promise<SocketResponse<T>>,
+  clearSocket: () => void,
 ) {
 
   async function createRoom(userData: Partial<User>) {
@@ -65,7 +66,7 @@ export function setupRoomHandlers(
     
         setTimeout(() => {
           store.dispatch(notificationsSlice.hideMessage())
-        }, 3000)
+        }, 5000)
       }
     }
   }
@@ -83,6 +84,8 @@ export function setupRoomHandlers(
     socket.removeAllListeners()
 
     socket.disconnect()
+
+    clearSocket()
 
     store.dispatch({
       type: 'room/setSocketId',

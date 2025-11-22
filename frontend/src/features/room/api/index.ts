@@ -46,6 +46,10 @@ export const setupSocketMiddleware: Middleware<{}, RootState> = (store) => {
     })
   }
 
+  function clearSocket() {
+    globalSocket = undefined
+  }
+
   async function emitMessage<T>(type: string, payload: unknown) {
     const socket = await makeSureIsConnected()
 
@@ -77,7 +81,7 @@ export const setupSocketMiddleware: Middleware<{}, RootState> = (store) => {
     // It was not possible to configure the type directly in the parameter.
     const typedAction = action as PayloadAction<unknown>
 
-    const roomHandlerResult = setupRoomHandlers(store, typedAction, makeSureIsConnected, emitMessage)
+    const roomHandlerResult = setupRoomHandlers(store, typedAction, makeSureIsConnected, emitMessage, clearSocket)
     const storyHandlerResult = setupStoryHandlers(store, typedAction, makeSureRoomIsLoaded, emitMessage)
     const userHandlerResult = setupUserHandlers(store, typedAction, makeSureRoomIsLoaded, emitMessage)
 

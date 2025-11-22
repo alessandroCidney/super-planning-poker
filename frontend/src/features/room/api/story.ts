@@ -36,7 +36,7 @@ export function setupStoryHandlers(
 
     setTimeout(() => {
       store.dispatch(notificationsSlice.hideMessage())
-    }, 3000)
+    }, 5000)
   }
 
   async function removeStory(storyId: string) {

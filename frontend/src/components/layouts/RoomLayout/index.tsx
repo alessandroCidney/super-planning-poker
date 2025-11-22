@@ -2,8 +2,8 @@ import type { ReactNode } from 'react'
 
 import { useAppSelector } from '@/app/storeHooks'
 
-import { Sidebar } from '@/features/sidebar/Sidebar'
-import { NotificationSnackbar } from '@/features/notifications/NotificationSnackbar'
+import { Sidebar } from '@/features/sidebar/components/Sidebar'
+import { NotificationSnackbar } from '@/features/notifications/components/NotificationSnackbar'
 
 import { StyledMain, StyledSection } from './style'
 import { LayoutGroup } from 'motion/react'
