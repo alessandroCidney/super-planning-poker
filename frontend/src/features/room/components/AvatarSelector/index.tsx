@@ -14,6 +14,8 @@ import * as roomSlice from '@/features/room/roomSlice'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 
+import { useElementDimensions } from '@/hooks/useElementDimensions'
+
 import { UserAvatar } from '../UserAvatar'
 
 import { StyledAvatarButton, StyledCardContainer, StyledCornerActions, StyledCardImage, StyledCardsList, StyledOverlay, StyledCloseButton } from './style'
@@ -23,6 +25,8 @@ export function AvatarSelector() {
 
   const showAvatarSelector = useAppSelector(state => state.room.showAvatarSelector)
   const currentUserAvatar = useAppSelector(state => state.room.currentRoom?.users[state.room.socketId ?? ''].avatar)
+
+  const windowDimensions = useElementDimensions()
 
   const imagesArr = useMemo(() => [
     {
@@ -45,10 +49,26 @@ export function AvatarSelector() {
 
   const [selectedIndex, setSelectedIndex] = useState(imagesArr.findIndex(imageData => imageData.imageId === currentUserAvatar?.path))
 
-  const imageWidth = 300
+  const cardImageDimensions = useMemo(() => {
+    const baseDimensions = {
+      width: 350,
+      height: 450,
+    }
+
+    const baseAspectRatio = baseDimensions.width / baseDimensions.height
+
+    if (windowDimensions && baseDimensions.height >= 0.4 * windowDimensions.height) {
+      return {
+        height: windowDimensions.height * 0.4,
+        width: windowDimensions.height * 0.4 * baseAspectRatio,
+      }
+    }
+
+    return baseDimensions
+  }, [windowDimensions])
 
   const positionedImages = useMemo(() => {
-    const translateStep = imageWidth + 100
+    const translateStep = cardImageDimensions.width + 100
 
     return imagesArr.map((imageData, imageOriginalIndex) => ({
       ...imageData,
@@ -56,7 +76,7 @@ export function AvatarSelector() {
       originalIndex: imageOriginalIndex,
       selected: imageOriginalIndex === selectedIndex,
     }))
-  }, [imagesArr, selectedIndex])
+  }, [cardImageDimensions.width, imagesArr, selectedIndex])
 
   function incrementIndex() {
     if (selectedIndex + 1 < positionedImages.length) {
@@ -112,14 +132,14 @@ export function AvatarSelector() {
                   positionedImages.map((imageData) => (
                     <StyledCardContainer
                       key={imageData.imagePath}
-                      $width={imageWidth}
+                      $width={cardImageDimensions.width}
                       animate={{ x: imageData.translateX, scale: imageData.selected ? 1.3 : 1 }}
                       whileHover={{ scale: imageData.selected ? 1.3 : 1.1 }}
                       layout
                     >
                       <StyledCardImage
                         className={imageData.selected ? 'card-image--selected' : ''}
-                        $width={imageWidth}
+                        $width={cardImageDimensions.width}
                         $imageUrl={imageData.imagePath}
                         onClick={() => setIndex(imageData.originalIndex)}
                       />

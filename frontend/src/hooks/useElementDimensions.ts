@@ -1,13 +1,12 @@
 import React, { useLayoutEffect, useState } from 'react'
 
+// Get dimensions based on ref or window
 export function useElementDimensions(ref?: React.RefObject<HTMLElement | null>) {
   const [dimensions, setDimensions] = useState<{ width: number, height: number }>()
 
   useLayoutEffect(() => {
     function handleResize() {
       if (ref?.current) {
-        console.log('handleResize')
-
         const newDimensions = ref.current.getBoundingClientRect()
 
         if (newDimensions) {
@@ -17,7 +16,6 @@ export function useElementDimensions(ref?: React.RefObject<HTMLElement | null>) 
           })
         }
       } else {
-        console.log('handleResize2')
         setDimensions({
           width: window.innerWidth,
           height: window.innerHeight,
@@ -28,8 +26,6 @@ export function useElementDimensions(ref?: React.RefObject<HTMLElement | null>) 
     handleResize()
 
     if (ref?.current) {
-      console.log('START OBSERVE ELEMENT')
-
       const observer = new ResizeObserver(handleResize)
       observer.observe(ref.current)
 
