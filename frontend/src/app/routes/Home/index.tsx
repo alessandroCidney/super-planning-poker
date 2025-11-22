@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 import { DefaultButton } from '@/components/commons/DefaultButton'
 
 import { createRoom, joinRoom } from '@/features/room/roomSlice'
+import { useAvatars } from '@/features/room/hooks/useAvatars'
 
 import { StyledMain, Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions } from './styles'
 
@@ -17,6 +18,8 @@ export function Home() {
   const roomSelector = useAppSelector(state => state.room)
 
   const [searchParams] = useSearchParams()
+
+  const { getRandomAvatar } = useAvatars()
 
   const [enterRoomPayload, setEnterRoomPayload] = useState({
     code: searchParams.get('room') ?? '',
@@ -42,7 +45,7 @@ export function Home() {
 
           avatar: {
             type: 'internal_photo',
-            path: 'dog-warrior',
+            path: getRandomAvatar().imageId,
           },
         },
       }))
@@ -53,7 +56,7 @@ export function Home() {
 
           avatar: {
             type: 'internal_photo',
-            path: 'dog-warrior',
+            path: getRandomAvatar().imageId,
           },
         },
       }))

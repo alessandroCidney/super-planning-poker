@@ -5,11 +5,6 @@ import { BsArrowLeft, BsArrowRight, BsX } from 'react-icons/bs'
 
 import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
-import catKingImg from '@/assets/images/pixelarts/cat-king.png'
-import dogWarriorImg from '@/assets/images/pixelarts/dog-warrior.png'
-import birdWizardImg from '@/assets/images/pixelarts/bird-wizard.png'
-import birdBusinesspersonImg from '@/assets/images/pixelarts/bird-businessperson.png'
-
 import * as roomSlice from '@/features/room/roomSlice'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
@@ -17,6 +12,8 @@ import { DefaultButton } from '@/components/commons/DefaultButton'
 import { useElementDimensions } from '@/hooks/useElementDimensions'
 
 import { UserAvatar } from '../UserAvatar'
+
+import { useAvatars } from '../../hooks/useAvatars'
 
 import { StyledAvatarButton, StyledCardContainer, StyledCornerActions, StyledCardImage, StyledCardsList, StyledOverlay, StyledCloseButton } from './style'
 
@@ -28,26 +25,9 @@ export function AvatarSelector() {
 
   const windowDimensions = useElementDimensions()
 
-  const imagesArr = useMemo(() => [
-    {
-      imageId: 'cat-king',
-      imagePath: catKingImg,
-    },
-    {
-      imageId: 'dog-warrior',
-      imagePath: dogWarriorImg,
-    },
-    {
-      imageId: 'bird-wizard',
-      imagePath: birdWizardImg,
-    },
-    {
-      imageId: 'bird-businessperson',
-      imagePath: birdBusinesspersonImg,
-    },
-  ], [])
+  const { avatarsArr } = useAvatars()
 
-  const [selectedIndex, setSelectedIndex] = useState(imagesArr.findIndex(imageData => imageData.imageId === currentUserAvatar?.path))
+  const [selectedIndex, setSelectedIndex] = useState(avatarsArr.findIndex(imageData => imageData.imageId === currentUserAvatar?.path))
 
   const cardImageDimensions = useMemo(() => {
     const baseDimensions = {
@@ -70,13 +50,13 @@ export function AvatarSelector() {
   const positionedImages = useMemo(() => {
     const translateStep = cardImageDimensions.width + 100
 
-    return imagesArr.map((imageData, imageOriginalIndex) => ({
+    return avatarsArr.map((imageData, imageOriginalIndex) => ({
       ...imageData,
       translateX: (imageOriginalIndex - selectedIndex) * translateStep,
       originalIndex: imageOriginalIndex,
       selected: imageOriginalIndex === selectedIndex,
     }))
-  }, [cardImageDimensions.width, imagesArr, selectedIndex])
+  }, [avatarsArr, cardImageDimensions.width, selectedIndex])
 
   function incrementIndex() {
     if (selectedIndex + 1 < positionedImages.length) {
