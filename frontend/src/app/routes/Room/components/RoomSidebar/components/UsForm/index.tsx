@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { BsCheck, BsX } from 'react-icons/bs'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
+import { SimpleInput } from '@/components/commons/SimpleInput'
+
+import { allFormRules, useFormRules } from '@/features/forms/hooks/useFormRules'
 
 import { StyledCardActions, StyledCardFormContainer, StyledHeader } from './styles'
-import { SimpleInput } from '@/components/commons/SimpleInput'
+import { ErrorMessageWrapper } from '@/features/forms/components/ErrorMessageWrapper'
 
 interface UsFormProps {
   onSubmit: (title: string) => void | Promise<void>
@@ -12,14 +15,20 @@ interface UsFormProps {
 }
 
 export function UsForm({ onSubmit, onCancel }: UsFormProps) {
-  const [formPayload, setFormPayload] = useState({
-    title: '',
+  const titleFieldControls = useFormRules({
+    initialValue: '',
+    selectedRules: [
+      allFormRules.requiredString,
+      allFormRules.maxLength(1000),
+    ],
   })
 
   function handleSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
 
-    onSubmit(formPayload.title)
+    if (titleFieldControls.validate().valid) {
+      onSubmit(titleFieldControls.value)
+    }
   }
 
   return (
@@ -27,12 +36,16 @@ export function UsForm({ onSubmit, onCancel }: UsFormProps) {
       onSubmit={handleSubmit}
     >
       <StyledHeader>
-        <SimpleInput
-          label='Título da Tarefa'
-          value={formPayload.title}
-          autoFocus
-          onChange={e => setFormPayload({ ...formPayload, title: e.target.value })}
-        />
+        <ErrorMessageWrapper
+          errorMessage={titleFieldControls.errorMessage}
+        >
+          <SimpleInput
+            label='Título da Tarefa'
+            value={titleFieldControls.value}
+            autoFocus
+            onChange={e => titleFieldControls.setValue(e.target.value)}
+          />
+        </ErrorMessageWrapper>
       </StyledHeader>
 
       <StyledCardActions>

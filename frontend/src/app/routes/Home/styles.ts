@@ -73,10 +73,3 @@ export const FormActions = styled.div`
     margin-bottom: 10px;
   }
 `
-
-export const FormErrorMessage = styled.div`
-  margin-bottom: 10px;
-
-  color: var(--theme-error-color);
-  font-weight: 600;
-`

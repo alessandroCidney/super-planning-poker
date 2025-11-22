@@ -14,8 +14,9 @@ import { useAvatars } from '@/features/room/hooks/useAvatars'
 
 import { api } from '@/utils/api'
 
-import { Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions, FormErrorMessage } from './styles'
-import { allFormRules, useFormRules } from '@/hooks/useFormRules'
+import { Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions } from './styles'
+import { allFormRules, useFormRules } from '@/features/forms/hooks/useFormRules'
+import { ErrorMessageWrapper } from '@/features/forms/components/ErrorMessageWrapper'
 
 export function Home() {
   const navigate = useNavigate()
@@ -165,26 +166,22 @@ export function Home() {
                 Entre em uma sala
               </h2>
 
-              <FormField>
-                <FieldTitle>
-                  Informe o código da sala em que deseja entrar:
-                </FieldTitle>
+              <ErrorMessageWrapper
+                errorMessage={roomCodeFieldControls.errorMessage}
+              >
+                <FormField>
+                  <FieldTitle>
+                    Informe o código da sala em que deseja entrar:
+                  </FieldTitle>
 
-                <FieldInput
-                  type='text'
-                  placeholder='Código da Sala'
-                  value={roomCodeFieldControls.value}
-                  onChange={(e) => roomCodeFieldControls.setValue(e.target.value)}
-                />
-              </FormField>
-
-              {
-                roomCodeFieldControls.errorMessage && (
-                  <FormErrorMessage>
-                    { roomCodeFieldControls.errorMessage }
-                  </FormErrorMessage>
-                )
-              }
+                  <FieldInput
+                    type='text'
+                    placeholder='Código da Sala'
+                    value={roomCodeFieldControls.value}
+                    onChange={(e) => roomCodeFieldControls.setValue(e.target.value)}
+                  />
+                </FormField>
+              </ErrorMessageWrapper>
 
               <DefaultButton
                 color='var(--theme-primary-darken-2-color)'
@@ -223,26 +220,22 @@ export function Home() {
                 }
               </p>
 
-              <FormField>
-                <FieldTitle>
-                  Como deseja ser chamado?
-                </FieldTitle>
+              <ErrorMessageWrapper
+                errorMessage={nameFieldControls.errorMessage}
+              >
+                <FormField>
+                  <FieldTitle>
+                    Como deseja ser chamado?
+                  </FieldTitle>
 
-                <FieldInput
-                  type='text'
-                  placeholder='Potato Chips'
-                  value={nameFieldControls.value}
-                  onChange={(e) => nameFieldControls.setValue(e.target.value)}
-                />
-              </FormField>
-
-              {
-                nameFieldControls.errorMessage && (
-                  <FormErrorMessage>
-                    { nameFieldControls.errorMessage }
-                  </FormErrorMessage>
-                )
-              }
+                  <FieldInput
+                    type='text'
+                    placeholder='Potato Chips'
+                    value={nameFieldControls.value}
+                    onChange={(e) => nameFieldControls.setValue(e.target.value)}
+                  />
+                </FormField>
+              </ErrorMessageWrapper>
 
               <FormActions>
                 <DefaultButton
