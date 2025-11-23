@@ -1,5 +1,7 @@
 import type { Middleware, PayloadAction } from '@reduxjs/toolkit'
 
+import type { Socket } from 'socket.io-client'
+
 import * as roomSlice from '@/features/room/roomSlice'
 import * as notificationsSlice from '@/features/notifications/notificationsSlice'
 
@@ -137,4 +139,13 @@ export function setupStoryHandlers(
     default:
       return { stopAction: false }
   }
+}
+
+export function setupStoryListeners(
+  socket: Socket,
+  store: MiddlewareStoreParam,
+) {
+  socket.on('story:voting-concluded', (storyData: Story) => {
+    store.dispatch(roomSlice.showVotingConcludedAlert(storyData))
+  })
 }

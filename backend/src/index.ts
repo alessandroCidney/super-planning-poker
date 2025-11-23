@@ -51,8 +51,6 @@ app.get('/rooms/:id', (req, res) => {
 })
 
 io.on('connection', (socket) => {
-  console.log('new socket connection', socket.id)
-
   setupRoomEvents(io, socket)
   setupStoryEvents(io, socket)
   setupUserEvents(io, socket)

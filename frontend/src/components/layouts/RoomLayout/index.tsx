@@ -30,7 +30,7 @@ export function RoomLayout({ children, sidebarContent, sidebarTitle }: RoomLayou
           }}
         >
           { children }
-              
+
           <NotificationSnackbar />
         </StyledSection>
 

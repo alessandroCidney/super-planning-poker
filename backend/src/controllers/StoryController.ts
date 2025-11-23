@@ -50,6 +50,8 @@ export class StoryController {
 
     this.io.to(params.roomId).emit('room:updated', onlineRooms[params.roomId])
 
+    this.io.to(params.roomId).emit('story:voting-concluded', onlineRooms[params.roomId].stories[params.storyId])
+
     return onlineRooms[params.roomId].stories[params.storyId]
   }
 

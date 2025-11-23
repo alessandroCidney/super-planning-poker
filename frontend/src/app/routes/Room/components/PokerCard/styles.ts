@@ -17,7 +17,7 @@ export const StyledButton = styled(motion.button)<StyleButtonProps>`
   color: #fff;
 
   border: none;
-  border-radius: 8px;
+  border-radius: calc(${props => props.$width || '120px'} * 1 / 15);
 
   background-color: ${props => props.$color ?? 'var(--theme-primary-color)'};
 

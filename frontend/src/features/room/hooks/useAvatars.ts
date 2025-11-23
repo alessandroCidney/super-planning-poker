@@ -5,6 +5,7 @@ import dogWarriorImg from '@/assets/images/pixelarts/dog-warrior.png'
 import birdWizardImg from '@/assets/images/pixelarts/bird-wizard.png'
 import birdBusinesspersonImg from '@/assets/images/pixelarts/bird-businessperson.png'
 import spyFoxImg from '@/assets/images/pixelarts/spy-fox.png'
+import rabbitDoctorImg from '@/assets/images/pixelarts/rabbit-doctor.png'
 
 export function useAvatars() {
   const avatarsArr = useMemo(() => [
@@ -27,6 +28,10 @@ export function useAvatars() {
     {
       imageId: 'spy-fox',
       imagePath: spyFoxImg,
+    },
+    {
+      imageId: 'rabbit-doctor',
+      imagePath: rabbitDoctorImg,
     },
   ], [])
 

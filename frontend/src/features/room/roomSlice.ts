@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 import type { Room } from '@/types/rooms'
 import type { User } from '@/types/users'
+import type { Story } from '@/types/stories'
 
 export interface RoomState {
   socketId?: string
@@ -9,6 +10,9 @@ export interface RoomState {
   currentRoom?: Room
 
   showAvatarSelector: boolean
+  
+  showVotingConcludedAlert: boolean
+  votingConcludedStory?: Story
 }
 
 const initialState: RoomState = {
@@ -17,6 +21,9 @@ const initialState: RoomState = {
   currentRoom: undefined,
 
   showAvatarSelector: false,
+
+  showVotingConcludedAlert: false,
+  votingConcludedStory: undefined,
 }
 
 export const roomSlice = createSlice({
@@ -35,6 +42,15 @@ export const roomSlice = createSlice({
 
     toggleAvatarSelector: (state) => {
       state.showAvatarSelector = !state.showAvatarSelector
+    },
+
+    showVotingConcludedAlert: (state, action: PayloadAction<Story>) => {
+      state.votingConcludedStory = action.payload
+      state.showVotingConcludedAlert = true
+    },
+
+    closeVotingConcludedAlert: (state) => {
+      state.showVotingConcludedAlert = false
     },
 
     /* WebSocket Events */
@@ -57,7 +73,11 @@ export const roomSlice = createSlice({
 export const {
   setSocketId,
   setCurrentRoom,
+
   toggleAvatarSelector,
+
+  showVotingConcludedAlert,
+  closeVotingConcludedAlert,
 
   createRoom,
   joinRoom,

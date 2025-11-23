@@ -9,7 +9,7 @@ import type { SocketResponse } from '@/types/socket'
 import { AppError } from '@/utils/error'
 
 import { setupRoomHandlers } from './room'
-import { setupStoryHandlers } from './story'
+import { setupStoryHandlers, setupStoryListeners } from './story'
 import { setupUserHandlers } from './user'
 
 /*
@@ -40,6 +40,8 @@ export const setupSocketMiddleware: Middleware<{}, RootState> = (store) => {
         connectedSocket.onAny((eventName, ...args) => {
           console.log('catch all', eventName, ...args)
         })
+
+        setupStoryListeners(connectedSocket, store)
 
         resolve(connectedSocket)
       })

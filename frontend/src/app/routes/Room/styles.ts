@@ -33,3 +33,24 @@ export const StyledCardsContainer = styled.div`
     opacity: 0.8;
   }
 `
+
+export const StyledCardOverlayContent = styled.div`
+  text-align: center;
+
+  h1 {
+    margin-bottom: 20px;
+
+    color: #fff;
+  }
+
+  > button:first-of-type {
+    margin-bottom: 20px;
+  }
+`
+
+export const StyledCardOverlayActions = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+`

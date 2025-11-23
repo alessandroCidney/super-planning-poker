@@ -3,7 +3,9 @@ import { BsFillTrash3Fill, BsCircleFill, BsArrowCounterclockwise } from 'react-i
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 
-import type { Story } from '../../../../../../../types/stories'
+import { useVoting } from '@/features/room/hooks/useVoting'
+
+import type { Story } from '@/types/stories'
 
 import { FloatingActions, StyledCardActions, StyledCardContainer, StyledHeader, StyledVotingResultContainer, StyledVotingResult, StyledWarning } from './styles'
 
@@ -27,45 +29,7 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
     return classNameArr.join(' ')
   }, [storyData.votingStatus])
 
-  const votingResult = useMemo(() => {
-    const voteValues = Object.values(storyData.votes)
-
-    if (!voteValues.length) {
-      return [0]
-    }
-
-    type OccurenceAnalysisObj = Record<string, { occurrence: number }>
-
-    const occurrenceAnalysis: OccurenceAnalysisObj = {}
-
-    voteValues.forEach((voteValue) => {
-      if (voteValue in occurrenceAnalysis) {
-        occurrenceAnalysis[voteValue].occurrence++
-      } else {
-        occurrenceAnalysis[voteValue] = { occurrence: 1 }
-      }
-    })
-
-    let maxOccurrenceAnalysis: OccurenceAnalysisObj = {}
-
-    Object.entries(occurrenceAnalysis).forEach(([voteValue, voteAnalysisObj]) => {
-      const alreadySavedValue = voteValue in maxOccurrenceAnalysis
-      const firstValue = Object.values(maxOccurrenceAnalysis).length === 0
-      const greaterOccurrence = Object.values(maxOccurrenceAnalysis).every(item => item.occurrence < voteAnalysisObj.occurrence)
-
-      const sameOccurrence = Object.values(maxOccurrenceAnalysis).every(item => item.occurrence === voteAnalysisObj.occurrence)
-
-      if (alreadySavedValue || firstValue || greaterOccurrence) {
-        maxOccurrenceAnalysis = {
-          [voteValue]: voteAnalysisObj,
-        }
-      } else if (sameOccurrence) {
-        maxOccurrenceAnalysis[voteValue] = voteAnalysisObj
-      }
-    })
-
-    return Object.keys(maxOccurrenceAnalysis).map(item => parseInt(item))
-  }, [storyData.votes])
+  const { votingResult } = useVoting(storyData)
 
   interface AnimatedContainerProps {
     children: ReactNode
@@ -145,8 +109,10 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
       <StyledCardActions>
         <StyledVotingResultContainer>
           {
-            votingResult.map((voteValue) => (
-              <StyledVotingResult>
+            votingResult?.map((voteValue, voteValueIndex) => (
+              <StyledVotingResult
+                key={`voteValueIndex${voteValueIndex}`}
+              >
                 { voteValue }
               </StyledVotingResult>
             ))

@@ -4,8 +4,11 @@ import { useNavigate, useParams } from 'react-router'
 import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
 import * as roomSlice from '@/features/room/roomSlice'
+import { VotingConcludedAlert } from '@/features/room/components/VotingConcludedAlert'
 
+import { DefaultButton } from '@/components/commons/DefaultButton'
 import { RoomLayout } from '@/components/layouts/RoomLayout'
+import { Overlay } from '@/components/commons/Overlay'
 
 import { generateQuadraticEquation } from '@/utils/calc'
 
@@ -13,8 +16,9 @@ import { RoomCodeCopyButton } from './components/RoomCodeCopyButton'
 import { RoomSidebar } from './components/RoomSidebar'
 import { RoomHeader } from './components/RoomHeader'
 import { RoomTable } from './components/RoomTable'
+import { PokerCard } from './components/PokerCard'
 
-import { StyledCardsContainer, StyledPokerCard } from './styles'
+import { StyledCardOverlayActions, StyledCardOverlayContent, StyledCardsContainer, StyledPokerCard } from './styles'
 
 export function Room() {
   const navigate = useNavigate()
@@ -24,8 +28,20 @@ export function Room() {
   const roomSelector = useAppSelector(state => state.room)
 
   const [hoveringCards, setHoveringCards] = useState(false)
+  const [showVoteConfirmation, setShowVoteConfirmation] = useState(false)
+  const [voteConfirmationPayload, setVoteConfirmationPayload] = useState(0)
 
   const cardWidth = 120
+
+  function showVoteConfirmationScreen(voteValue: number) {
+    setVoteConfirmationPayload(voteValue)
+    setShowVoteConfirmation(true)
+  }
+
+  function confirmVote() {
+    setShowVoteConfirmation(false)
+    saveVote(voteConfirmationPayload)
+  }
 
   function saveVote(voteValue: number) {
     if (!roomSelector.currentRoom) {
@@ -201,13 +217,58 @@ export function Room() {
                 filter: 'brightness(0.9)',
               }}
 
-              onClick={() => saveVote(cardData.value)}
+              onClick={() => showVoteConfirmationScreen(cardData.value)}
             />
           ))
         }
       </StyledCardsContainer>
 
       <RoomCodeCopyButton />
+
+      <Overlay
+        active={showVoteConfirmation}
+        closeOverlay={() => {}}
+      >
+        <StyledCardOverlayContent>
+          <h1>
+            O seu voto será
+          </h1>
+
+          <PokerCard
+            width='300px'
+            cardValue={voteConfirmationPayload}
+          />
+
+          <StyledCardOverlayActions>
+            <DefaultButton
+              color='var(--theme-primary-darken-2-color)'
+              hoverColor='var(--theme-primary-darken-3-color)'
+              onClick={(e) => {
+                e.stopPropagation()
+
+                confirmVote()
+              }}
+            >
+              Confirmar
+            </DefaultButton>
+
+            <DefaultButton
+              color='#f1f1f1'
+              hoverColor=''
+              textColor='#424a52'
+              onClick={(e) => {
+                e.stopPropagation()
+
+                setShowVoteConfirmation(false)
+              }}
+            >
+              Cancelar
+            </DefaultButton>
+          </StyledCardOverlayActions>
+        </StyledCardOverlayContent>
+      </Overlay>
+
+      <VotingConcludedAlert />
     </RoomLayout>
   )
 }

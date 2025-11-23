@@ -20,8 +20,6 @@ export function RoomSidebar() {
 
   const [showForm, setShowForm] = useState(false)
 
-  console.log('render RoomSidebar')
-
   function createStory(title: string) {
     dispatch(roomSlice.createStory({ title }))
 
