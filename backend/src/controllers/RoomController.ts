@@ -30,7 +30,11 @@ export class RoomController {
 
   joinRoom(params: { roomId: string, userData: Partial<User> }) {
     if (!onlineRooms[params.roomId]) {
-      throw new AppError('Cannot found room', 404)
+      throw new AppError({
+        message: 'Sala não encontrada!',
+        details: 'A sala não existe ou foi removida.',
+        status: 404,
+      })
     }
 
     const user = new User(params.userData.name, this.socket.id, params.userData.avatar)

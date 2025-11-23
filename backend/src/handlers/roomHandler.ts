@@ -2,7 +2,7 @@ import { Socket, Server } from 'socket.io'
 
 import { RoomController, onlineRooms } from '../controllers/RoomController'
 
-import { AppError } from '../helpers/error'
+import { websocketErrorHandlerWrapper } from '../helpers/error'
 
 import { SocketCallback } from '../types/socket'
 
@@ -21,7 +21,7 @@ function setupRoomGeneralEvents(roomController: RoomController, io: Server) {
 }
 
 function setupRoomIndividualEvents(roomController: RoomController, socket: Socket) {
-  socket.on('room:create', (payload: Parameters<typeof roomController.createRoom>[0], callback: SocketCallback) => {
+  socket.on('room:create', websocketErrorHandlerWrapper((payload: Parameters<typeof roomController.createRoom>[0], callback: SocketCallback) => {
     const newRoom = roomController.createRoom(payload)
 
     callback({
@@ -29,28 +29,17 @@ function setupRoomIndividualEvents(roomController: RoomController, socket: Socke
       error: false,
       data: newRoom,
     })
-  })
+  }))
 
-  socket.on('room:join', (payload: Parameters<typeof roomController.joinRoom>[0], callback: SocketCallback) => {
-    try {
-      const joinedRoom = roomController.joinRoom(payload)
+  socket.on('room:join', websocketErrorHandlerWrapper((payload: Parameters<typeof roomController.joinRoom>[0], callback: SocketCallback) => {
+    const joinedRoom = roomController.joinRoom(payload)
 
-      callback({
-        status: 200,
-        error: false,
-        data: joinedRoom,
-      })
-    } catch (err) {
-      if (err instanceof AppError) {
-        callback({
-          error: true,
-          status: err.status,
-          message: err.message,
-          data: null,
-        })
-      }
-    }
-  })
+    callback({
+      status: 200,
+      error: false,
+      data: joinedRoom,
+    })
+  }))
 
   socket.on('disconnecting', () => {
     for (const roomId of socket.rooms) {

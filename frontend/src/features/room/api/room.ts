@@ -42,33 +42,19 @@ export function setupRoomHandlers(
   }
 
   async function joinRoom(roomId: string, userData: Partial<User>) {
-    try {
-      const socket = await makeSureIsConnected()
+    const socket = await makeSureIsConnected()
 
-      const response = await emitMessage<Room>('room:join', {
-        roomId,
-        userData,
-      })
+    const response = await emitMessage<Room>('room:join', {
+      roomId,
+      userData,
+    })
 
-      store.dispatch({
-        type: 'room/setCurrentRoom',
-        payload: response.data,
-      })
+    store.dispatch({
+      type: 'room/setCurrentRoom',
+      payload: response.data,
+    })
 
-      socket.on('room:updated', updateRoom)
-    } catch (err) {
-      if (err instanceof AppError && err.status === 404) {
-        showMessageWithDelay(
-          () => store.getState().notifications,
-          store.dispatch,
-          {
-            title: 'Sala não encontrada!',
-            description: 'A sala não existe ou foi removida.',
-            type: 'info',
-          },
-        )
-      }
-    }
+    socket.on('room:updated', updateRoom)
   }
 
   function updateRoom(updatedRoom: Room) {

@@ -1,9 +1,18 @@
+interface AppErrorParams {
+  message: string
+  details: string
+  status: number
+}
+
 export class AppError extends Error {
   status: number
 
-  constructor(message: string, status: number) {
-    super(message)
+  details: string
 
-    this.status = status
+  constructor(params: AppErrorParams) {
+    super(params.message)
+
+    this.details = params.details
+    this.status = params.status
   }
 }

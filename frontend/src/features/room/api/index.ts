@@ -11,6 +11,7 @@ import { AppError } from '@/utils/error'
 import { setupRoomHandlers } from './room'
 import { setupStoryHandlers, setupStoryListeners } from './story'
 import { setupUserHandlers } from './user'
+import { showMessageWithDelay } from '@/features/notifications/hooks/useNotifications'
 
 /*
   The Redux documentation recommends disabling the ESLint rule.
@@ -62,7 +63,23 @@ export const setupSocketMiddleware: Middleware<{}, RootState> = (store) => {
     })
 
     if (response.error) {
-      throw new AppError(response.message ?? 'Internal server error', response.status)
+      const appError = new AppError({
+        message: response.message ?? 'Erro não identificado!',
+        details: response.details ?? 'Por favor, tente novamente mais tarde.',
+        status: response.status,
+      })
+
+      showMessageWithDelay(
+        () => store.getState().notifications,
+        store.dispatch,
+        {
+          title: appError.message,
+          description: appError.details,
+          type: 'error',
+        },
+      )
+
+      throw appError
     }
 
     return response

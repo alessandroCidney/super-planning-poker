@@ -4,6 +4,13 @@ import { onlineRooms } from './RoomController'
 
 import { Story } from '../models/Story'
 
+import { AppError } from '../helpers/error'
+
+function someVotingIsStarted(roomId: string) {
+  return Object.values(onlineRooms[roomId].stories)
+    .some(storyData => storyData.votingStatus === 'in_progress')
+}
+
 export class StoryController {
   io: Server
   socket: Socket
@@ -30,6 +37,14 @@ export class StoryController {
   }
 
   startVoting(params: { roomId: string, storyId: string }) {
+    if (someVotingIsStarted(params.roomId)) {
+      throw new AppError({
+        message: 'Já existe uma votação!',
+        details: 'Finalize a votação atual antes de iniciar próximas votações.',
+        status: 400,
+      })
+    }
+
     onlineRooms[params.roomId].stories[params.storyId].votingStatus = 'in_progress'
 
     this.io.to(params.roomId).emit('room:updated', onlineRooms[params.roomId])
@@ -58,6 +73,14 @@ export class StoryController {
   }
 
   restartVoting(params: { roomId: string, storyId: string }) {
+    if (someVotingIsStarted(params.roomId)) {
+      throw new AppError({
+        message: 'Já existe uma votação!',
+        details: 'Finalize a votação atual antes de iniciar próximas votações.',
+        status: 400,
+      })
+    }
+
     onlineRooms[params.roomId].stories[params.storyId].votes = {}
     onlineRooms[params.roomId].stories[params.storyId].votingStatus = 'in_progress'
 
