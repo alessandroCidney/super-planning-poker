@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 export interface NotificationsState {
   active: boolean
+  id?: string
   title: string
   description: string
   type: 'success' | 'error' | 'info'
@@ -9,6 +10,7 @@ export interface NotificationsState {
 
 const initialState: NotificationsState = {
   active: false,
+  id: undefined,
   title: '',
   description: '',
   type: 'success',
@@ -20,7 +22,8 @@ export const notificationsSlide = createSlice({
   initialState,
 
   reducers: {
-    showMessage: (state, action: PayloadAction<{ title: string, description: string, type: NotificationsState['type'] }>) => {
+    showMessage: (state, action: PayloadAction<Omit<NotificationsState, 'active'>>) => {
+      state.id = action.payload.id
       state.title = action.payload.title
       state.description = action.payload.description
       state.type = action.payload.type

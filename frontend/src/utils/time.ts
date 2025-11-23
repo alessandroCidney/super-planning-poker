@@ -1,3 +1,9 @@
+export function wait(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
 export function waitFor(conditionFn: () => boolean) {
   return new Promise<void>((resolve) => {
     if (conditionFn()) {

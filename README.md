@@ -3,5 +3,4 @@
 // TODO: Add feature controls when sidebar is closed
 // TODO: Add fatal error page
 // TODO: Add 404 page
-// TODO: Add voting result screen
-// TODO: Add vote confirmation screen
+// TODO: Prevent start two or more votings at same time

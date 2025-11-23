@@ -3,7 +3,7 @@ import type { Middleware, PayloadAction } from '@reduxjs/toolkit'
 import type { Socket } from 'socket.io-client'
 
 import * as roomSlice from '@/features/room/roomSlice'
-import * as notificationsSlice from '@/features/notifications/notificationsSlice'
+import { showMessageWithDelay } from '@/features/notifications/hooks/useNotifications'
 
 import type { RootState } from '@/app/store'
 
@@ -30,15 +30,15 @@ export function setupStoryHandlers(
       title,
     })
 
-    store.dispatch(notificationsSlice.showMessage({
-      title: 'Tarefa adicionada!',
-      description: 'A nova tarefa foi adicionada com sucesso.',
-      type: 'success',
-    }))
-
-    setTimeout(() => {
-      store.dispatch(notificationsSlice.hideMessage())
-    }, 5000)
+    showMessageWithDelay(
+      () => store.getState().notifications,
+      store.dispatch,
+      {
+        title: 'Tarefa adicionada!',
+        description: 'A nova tarefa foi adicionada com sucesso.',
+        type: 'success',
+      },
+    )
   }
 
   async function removeStory(storyId: string) {
@@ -145,6 +145,30 @@ export function setupStoryListeners(
   socket: Socket,
   store: MiddlewareStoreParam,
 ) {
+  socket.on('story:voting-started', (storyData: Story) => {
+    showMessageWithDelay(
+      () => store.getState().notifications,
+      store.dispatch,
+      {
+        title: 'Nova votação iniciada!',
+        description: `Aguardando votos para a tarefa ${storyData.title}.`,
+        type: 'info',
+      },
+    )
+  })
+
+  socket.on('story:voting-restarted', (storyData: Story) => {
+    showMessageWithDelay(
+      () => store.getState().notifications,
+      store.dispatch,
+      {
+        title: 'Votação reiniciada!',
+        description: `Aguardando votos para a tarefa ${storyData.title}.`,
+        type: 'info',
+      },
+    )
+  })
+
   socket.on('story:voting-concluded', (storyData: Story) => {
     store.dispatch(roomSlice.showVotingConcludedAlert(storyData))
   })

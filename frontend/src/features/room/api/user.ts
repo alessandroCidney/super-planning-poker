@@ -3,7 +3,7 @@ import type { Middleware, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '@/app/store'
 
 import * as roomSlice from '@/features/room/roomSlice'
-import * as notificationsSlice from '@/features/notifications/notificationsSlice'
+import { showMessageWithDelay } from '@/features/notifications/hooks/useNotifications'
 
 import type { User } from '@/types/users'
 import type { Room } from '@/types/rooms'
@@ -29,15 +29,15 @@ export function setupUserHandlers(
       avatar: avatarData,
     })
 
-    store.dispatch(notificationsSlice.showMessage({
-      title: 'Avatar atualizado!',
-      description: 'O novo avatar foi salvo com sucesso.',
-      type: 'success',
-    }))
-    
-    setTimeout(() => {
-      store.dispatch(notificationsSlice.hideMessage())
-    }, 5000)
+    showMessageWithDelay(
+      () => store.getState().notifications,
+      store.dispatch,
+      {
+        title: 'Avatar atualizado!',
+        description: 'O novo avatar foi salvo com sucesso.',
+        type: 'success',
+      },
+    )
   }
 
   switch (action.type) {

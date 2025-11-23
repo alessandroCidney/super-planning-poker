@@ -5,7 +5,7 @@ import type { Middleware, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '@/app/store'
 
 import * as roomSlice from '@/features/room/roomSlice'
-import * as notificationsSlice from '@/features/notifications/notificationsSlice'
+import { showMessageWithDelay } from '@/features/notifications/hooks/useNotifications'
 
 import type { User } from '@/types/users'
 import type { Room } from '@/types/rooms'
@@ -58,15 +58,15 @@ export function setupRoomHandlers(
       socket.on('room:updated', updateRoom)
     } catch (err) {
       if (err instanceof AppError && err.status === 404) {
-        store.dispatch(notificationsSlice.showMessage({
-          title: 'Sala não encontrada!',
-          description: 'A sala não existe ou foi removida.',
-          type: 'info',
-        }))
-    
-        setTimeout(() => {
-          store.dispatch(notificationsSlice.hideMessage())
-        }, 5000)
+        showMessageWithDelay(
+          () => store.getState().notifications,
+          store.dispatch,
+          {
+            title: 'Sala não encontrada!',
+            description: 'A sala não existe ou foi removida.',
+            type: 'info',
+          },
+        )
       }
     }
   }
