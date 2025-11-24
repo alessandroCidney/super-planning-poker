@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import { BsQuestion, BsX } from 'react-icons/bs'
 
 import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
@@ -16,7 +18,9 @@ export function VotingConcludedAlert() {
   const dispatch = useAppDispatch()
   const roomSelector = useAppSelector(state => state.room)
 
-  const { votingResult } = useVoting(roomSelector.votingConcludedStory)
+  const { getVotingResult } = useVoting()
+
+  const votingResult = useMemo(() => getVotingResult(roomSelector.votingConcludedStory), [getVotingResult, roomSelector.votingConcludedStory])
 
   return votingResult ?
     (

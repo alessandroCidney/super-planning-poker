@@ -2,7 +2,11 @@ import styled from 'styled-components'
 
 import { motion } from 'motion/react'
 
-export const StyledCardContainer = styled(motion.article)`
+interface StyledCardContainerProps {
+  $width?: string
+}
+
+export const StyledCardContainer = styled(motion.article)<StyledCardContainerProps>`
   position: relative;
 
   display: flex;
@@ -10,11 +14,13 @@ export const StyledCardContainer = styled(motion.article)`
   justify-content: flex-start;
   flex-direction: column;
   
+  color: #fff;
+  
   background-color: var(--theme-primary-lighten-1-color);
 
   border-radius: 24px;
 
-  width: 100%;
+  width: ${props => props.$width || '100%'};
   aspect-ratio: 2 / 1;
 
   margin-bottom: 20px;

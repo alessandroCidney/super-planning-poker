@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
 import * as roomSlice from '@/features/room/roomSlice'
 import { VotingConcludedAlert } from '@/features/room/components/VotingConcludedAlert'
+import { useVoting } from '@/features/room/hooks/useVoting'
+import { FloatingVotingChip } from '@/features/room/components/FloatingVotingChip'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 import { RoomLayout } from '@/components/layouts/RoomLayout'
@@ -27,6 +29,8 @@ export function Room() {
   const dispatch = useAppDispatch()
   const roomSelector = useAppSelector(state => state.room)
 
+  const { votingStory } = useVoting()
+
   const [hoveringCards, setHoveringCards] = useState(false)
   const [showVoteConfirmation, setShowVoteConfirmation] = useState(false)
   const [voteConfirmationPayload, setVoteConfirmationPayload] = useState(0)
@@ -44,22 +48,14 @@ export function Room() {
   }
 
   function saveVote(voteValue: number) {
-    if (!roomSelector.currentRoom) {
-      throw new Error('Cannot found room data.')
+    if (votingStory) {
+      dispatch(
+        roomSlice.saveVote({
+          storyId: votingStory._id,
+          voteValue,
+        }),
+      )
     }
-
-    const activeStory = Object.values(roomSelector.currentRoom.stories).find(storyData => storyData.votingStatus === 'in_progress')
-
-    if (!activeStory) {
-      throw new Error('There are no stories up for vote.')
-    }
-
-    dispatch(
-      roomSlice.saveVote({
-        storyId: activeStory._id,
-        voteValue,
-      }),
-    )
   }
 
   const votingStatus = useMemo(() => {
@@ -67,18 +63,16 @@ export function Room() {
       return 'disconnected'
     }
 
-    const activeStory = Object.values(roomSelector.currentRoom.stories).find(storyData => storyData.votingStatus === 'in_progress')
-
-    if (!activeStory) {
+    if (!votingStory) {
       return 'no_voting_started'
     }
 
-    if (roomSelector.socketId in activeStory.votes) {
+    if (roomSelector.socketId in votingStory.votes) {
       return 'already_voted'
     }
 
     return 'in_progress'
-  }, [roomSelector.currentRoom, roomSelector.socketId])
+  }, [roomSelector.currentRoom, roomSelector.socketId, votingStory])
 
   const positionedCardsData = useMemo(() => {
     const initialCardsData = [
@@ -224,6 +218,8 @@ export function Room() {
       </StyledCardsContainer>
 
       <RoomCodeCopyButton />
+
+      <FloatingVotingChip />
 
       <Overlay
         active={showVoteConfirmation}

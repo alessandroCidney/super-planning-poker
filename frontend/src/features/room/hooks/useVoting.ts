@@ -1,9 +1,22 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
-import type { Story } from '@/types/stories'
+import { useAppSelector } from '@/app/storeHooks'
 
-export function useVoting(storyData?: Story) {
-  const votingResult = useMemo(() => {
+export function useVoting() {
+  const roomSelector = useAppSelector(state => state.room)
+
+  const votingStory = useMemo(() => {
+    if (!roomSelector.currentRoom || !roomSelector.socketId) {
+      return undefined
+    }
+
+    const activeStory = Object.values(roomSelector.currentRoom.stories)
+      .find(storyData => storyData.votingStatus === 'in_progress')
+
+    return activeStory
+  }, [roomSelector.currentRoom, roomSelector.socketId])
+
+  const getVotingResult = useCallback((storyData = votingStory) => {
     if (!storyData) {
       return undefined
     }
@@ -45,7 +58,10 @@ export function useVoting(storyData?: Story) {
     })
 
     return Object.keys(maxOccurrenceAnalysis).map(item => parseInt(item))
-  }, [storyData])
+  }, [votingStory])
 
-  return { votingResult }
+  return {
+    votingStory,
+    getVotingResult,
+  }
 }

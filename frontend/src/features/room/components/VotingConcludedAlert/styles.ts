@@ -17,7 +17,7 @@ export const StyledDialog = styled.div`
 
 export const StyledDialogIcon = styled.div`
   position: absolute;
-  bottom: -35px;
+  bottom: -65px;
   left: 50%;
   transform: translateX(-50%);
   
@@ -47,14 +47,14 @@ export const StyledDialogIconContainer = styled.div`
   position: relative;
   
   width: 100%;
-  height: 35%;
+  height: 30%;
 
   background-color: rgb(4, 150, 255, .3);
 `
 
 export const StyledDialogContent = styled.div`
   margin: auto;
-  padding-top: 50px;
+  padding-top: 80px;
 
   max-width: 90%;
 

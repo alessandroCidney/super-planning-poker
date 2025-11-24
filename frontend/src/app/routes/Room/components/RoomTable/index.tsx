@@ -2,6 +2,8 @@ import { useMemo, useRef } from 'react'
 
 import { useAppSelector } from '@/app/storeHooks'
 
+import { useVoting } from '@/features/room/hooks/useVoting'
+
 import { useElementDimensions } from '@/hooks/useElementDimensions'
 
 import { calculateEllipseEquidistantPointsCoordinates } from '@/utils/calc'
@@ -17,6 +19,8 @@ export function RoomTable() {
   const styledTableContainerRef = useRef<HTMLDivElement>(null)
 
   const tableContainerDimensions = useElementDimensions(styledTableContainerRef)
+
+  const { votingStory } = useVoting()
 
   const tableDimensions = useMemo(() => {
     const baseTableDimensions = {
@@ -80,16 +84,6 @@ export function RoomTable() {
     },
     [roomSelector.currentRoom?.users, roomSelector.socketId, tableDimensions.height, tableDimensions.width],
   )
-
-  const votingStory = useMemo(() => {
-    if (!roomSelector.currentRoom || !roomSelector.socketId) {
-      return undefined
-    }
-
-    const activeStory = Object.values(roomSelector.currentRoom.stories).find(storyData => storyData.votingStatus === 'in_progress')
-
-    return activeStory
-  }, [roomSelector.currentRoom, roomSelector.socketId])
 
   return roomSelector.currentRoom
     ? (

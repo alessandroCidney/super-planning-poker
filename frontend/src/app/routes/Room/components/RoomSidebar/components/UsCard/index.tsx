@@ -8,17 +8,33 @@ import { useVoting } from '@/features/room/hooks/useVoting'
 import type { Story } from '@/types/stories'
 
 import { FloatingActions, StyledCardActions, StyledCardContainer, StyledHeader, StyledVotingResultContainer, StyledVotingResult, StyledWarning } from './styles'
+import type { HTMLMotionProps } from 'motion/react'
 
-interface UsCardProps {
+interface UsCardProps extends HTMLMotionProps<'article'> {
   storyData: Story
 
   startVoting: (storyId: string) => void | Promise<void>
   concludeVoting: (storyId: string) => void | Promise<void>
   restartVoting: (storyId: string) => void | Promise<void>
   removeStory: (storyId: string) => void | Promise<void>
+
+  width?: string
+  className?: string
 }
 
-export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, removeStory }: UsCardProps) {
+export function UsCard({
+  storyData,
+  
+  startVoting,
+  concludeVoting,
+  restartVoting,
+  removeStory,
+  
+  width,
+  className = '',
+
+  ...rest
+}: UsCardProps) {
   const customClassName = useMemo(() => {
     const classNameArr = []
     
@@ -26,10 +42,15 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
       classNameArr.push('us-card--voting')
     }
 
-    return classNameArr.join(' ')
-  }, [storyData.votingStatus])
+    // Allows CSS extension via styled components
+    classNameArr.push(className)
 
-  const { votingResult } = useVoting(storyData)
+    return classNameArr.join(' ')
+  }, [className, storyData.votingStatus])
+
+  const { getVotingResult } = useVoting()
+
+  const votingResult = useMemo(() => getVotingResult(storyData), [getVotingResult, storyData])
 
   interface AnimatedContainerProps {
     children: ReactNode
@@ -39,7 +60,9 @@ export function UsCard({ storyData, startVoting, concludeVoting, restartVoting, 
     return (
       <StyledCardContainer
         className={customClassName}
+        $width={width}
         layout
+        {...rest}
       >
         { children }
       </StyledCardContainer>

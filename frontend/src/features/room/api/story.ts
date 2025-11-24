@@ -67,6 +67,16 @@ export function setupStoryHandlers(
       storyId,
       voteValue,
     })
+
+    showMessageWithDelay(
+      () => store.getState().notifications,
+      store.dispatch,
+      {
+        title: 'Voto salvo!',
+        description: 'Seu voto foi registrado com sucesso.',
+        type: 'success',
+      },
+    )
   }
 
   async function concludeVoting(storyId: string) {
