@@ -23,6 +23,7 @@ export const StyledButton = styled.button<ButtonProps>`
 
   font-size: 1.1rem;
   font-weight: 500;
+  text-decoration: none;
   color: ${props => props.$textColor || '#fff'};
 
   background-color: ${props => props.$color || 'var(--theme-primary-darken-1-color)'};

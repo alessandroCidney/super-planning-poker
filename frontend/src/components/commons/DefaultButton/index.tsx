@@ -1,7 +1,10 @@
-import { useMemo, type ReactNode } from 'react'
+import React, { useMemo, type ReactNode } from 'react'
+
+import { Link } from 'react-router'
+
 import { StyledButton } from './styles'
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export type CustomButtonProperties = {
   color?: string
   textColor?: string
   textHoverColor?: string
@@ -14,10 +17,21 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   list?: boolean
   disabled?: boolean
   readonly?: boolean
+  anchor?: boolean
 
   prependIcon?: ReactNode
   appendIcon?: ReactNode
 }
+
+type ButtonVersionProps = CustomButtonProperties & React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  anchor?: false
+}
+
+type LinkVersionProps = CustomButtonProperties & React.ComponentProps<typeof Link> & {
+  anchor: true
+}
+
+type ButtonProps = ButtonVersionProps | LinkVersionProps
 
 export function DefaultButton({
   children,
@@ -36,60 +50,84 @@ export function DefaultButton({
   list,
   disabled,
   readonly,
+  anchor,
   
   prependIcon,
   appendIcon,
+
   ...rest
 }: ButtonProps) {
-  const adaptedClasses = useMemo(
+  const buttonClassNames = useMemo(
     () => {
-      const customClassesArr = []
-
+      const customClassesArr = className ? [className] : []
+  
       if (block) {
         customClassesArr.push('default-button--block')
       }
-
+  
       if (icon) {
         customClassesArr.push('default-button--icon')
       }
-
+  
       if (list) {
         customClassesArr.push('default-button--list')
       }
-
+  
       if (prependIcon) {
         customClassesArr.push('default-button--text-and-icon')
       }
-
+  
       if (disabled) {
         customClassesArr.push('default-button--disabled')
       }
-
+  
       if (readonly) {
         customClassesArr.push('default-button--readonly')
       }
-
+  
       return `${customClassesArr.join(' ')} ${className}`
     },
     [block, icon, list, prependIcon, disabled, readonly, className],
   )
-  
-  return (
-    <StyledButton
-      className={adaptedClasses}
-      $color={color}
-      $textColor={textColor}
-      $textHoverColor={textHoverColor}
-      $hoverColor={hoverColor}
-      $minWidth={minWidth}
-      $iconSize={iconSize}
-      {...rest}
-    >
-      { prependIcon }
 
-      { children }
+  const baseProperties = {
+    'className': buttonClassNames,
+    '$color': color,
+    '$textColor': textColor,
+    '$textHoverColor': textHoverColor,
+    '$hoverColor': hoverColor,
+    '$minWidth': minWidth,
+    '$iconSize': iconSize,
+  }
 
-      { appendIcon }
-    </StyledButton>
-  )
+  function BaseChildren() {
+    return (
+      <>
+        { prependIcon }
+
+        { children }
+
+        { appendIcon }
+      </>
+    )
+  }
+
+  return anchor
+    ? (
+      <StyledButton
+        as={Link}
+        {...baseProperties}
+        {...rest as React.ComponentProps<typeof Link>}
+      >
+        <BaseChildren />
+      </StyledButton>
+    )
+    : (
+      <StyledButton
+        {...baseProperties}
+        {...rest as React.ButtonHTMLAttributes<HTMLButtonElement>}
+      >
+        <BaseChildren />
+      </StyledButton>
+    )
 }
