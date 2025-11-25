@@ -8,15 +8,19 @@ import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 import { DefaultButton } from '@/components/commons/DefaultButton'
 import { HomeLayout } from '@/components/layouts/HomeLayout'
 
+import { ErrorMessageWrapper } from '@/features/forms/components/ErrorMessageWrapper'
 import { useNotifications } from '@/features/notifications/hooks/useNotifications'
-import * as roomSlice from '@/features/room/roomSlice'
+import { allFormRules, useFormRules } from '@/features/forms/hooks/useFormRules'
 import { useAvatars } from '@/features/room/hooks/useAvatars'
+import * as roomSlice from '@/features/room/roomSlice'
 
 import { api } from '@/utils/api'
 
+import type { User } from '@/types/users'
+
+import { LocalAvatarSelector } from './components/LocalAvatarSelector'
+
 import { Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions } from './styles'
-import { allFormRules, useFormRules } from '@/features/forms/hooks/useFormRules'
-import { ErrorMessageWrapper } from '@/features/forms/components/ErrorMessageWrapper'
 
 export function Home() {
   const navigate = useNavigate()
@@ -45,6 +49,11 @@ export function Home() {
       allFormRules.requiredString,
       allFormRules.maxLength(300),
     ],
+  })
+
+  const [selectedAvatar, setSelectedAvatar] = useState<User['avatar']>({
+    path: getRandomAvatar().imageId,
+    type: 'internal_photo',
   })
   
   const [formStep, setFormStep] = useState<'room' | 'user'>('room')
@@ -77,10 +86,7 @@ export function Home() {
         userData: {
           name: nameFieldControls.value,
 
-          avatar: {
-            type: 'internal_photo',
-            path: getRandomAvatar().imageId,
-          },
+          avatar: selectedAvatar,
         },
       }))
     } else {
@@ -88,10 +94,7 @@ export function Home() {
         userData: {
           name: nameFieldControls.value,
 
-          avatar: {
-            type: 'internal_photo',
-            path: getRandomAvatar().imageId,
-          },
+          avatar: selectedAvatar,
         },
       }))
     }
@@ -220,6 +223,11 @@ export function Home() {
                     : <>Criando nova sala</>
                 }
               </p>
+
+              <LocalAvatarSelector
+                value={selectedAvatar}
+                onSelect={setSelectedAvatar}
+              />
 
               <ErrorMessageWrapper
                 errorMessage={nameFieldControls.errorMessage}

@@ -11,6 +11,7 @@ export type CustomButtonProperties = {
   hoverColor?: string
   minWidth?: string
   iconSize?: string
+  type?: string
 
   block?: boolean
   icon?: boolean
@@ -42,6 +43,7 @@ export function DefaultButton({
   hoverColor,
   minWidth,
   iconSize,
+  type = 'button',
 
   className,
 
@@ -117,6 +119,7 @@ export function DefaultButton({
       <StyledButton
         as={Link}
         {...baseProperties}
+        type={type}
         {...rest as React.ComponentProps<typeof Link>}
       >
         <BaseChildren />

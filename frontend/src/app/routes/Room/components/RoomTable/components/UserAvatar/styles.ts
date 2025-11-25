@@ -40,8 +40,8 @@ export const StyledUserContainer = styled(motion.div)<StyledCircleProps>`
   height: 54px;
 
   border-radius: 50%;
-  border: 2px solid white;
-  outline: 2px solid black;
+  border: 2px solid #fff;
+  outline: 2px solid #000;
 
   background-image: ${props => `url('${props.$backgroundImage}')`};
   background-size: 100%;

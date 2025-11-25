@@ -4,28 +4,42 @@ import { BsArrowLeft, BsArrowRight } from 'react-icons/bs'
 
 import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
+import { DefaultButton } from '@/components/commons/DefaultButton'
+import { Overlay } from '@/components/commons/Overlay'
+
 import * as roomSlice from '@/features/room/roomSlice'
 
-import { DefaultButton } from '@/components/commons/DefaultButton'
-
 import { useElementDimensions } from '@/hooks/useElementDimensions'
+
+import type { User } from '@/types/users'
 
 import { useAvatars } from '../../hooks/useAvatars'
 
 import { StyledCardContainer, StyledCornerActions, StyledCardImage, StyledCardsList } from './style'
-import { Overlay } from '@/components/commons/Overlay'
 
-export function AvatarSelector() {
+interface AvatarSelectorProps {
+  open?: boolean
+
+  value?: User['avatar']
+
+  onSelect?: (newValue: User['avatar']) => void
+  onClose?: () => void
+}
+
+export function AvatarSelector(params: AvatarSelectorProps) {
   const dispatch = useAppDispatch()
 
-  const showAvatarSelector = useAppSelector(state => state.room.showAvatarSelector)
-  const currentUserAvatar = useAppSelector(state => state.room.currentRoom?.users[state.room.socketId ?? ''].avatar)
+  const storeOpen = useAppSelector(state => state.room.showAvatarSelector)
+  const storeAvatar = useAppSelector(state => state.room.currentRoom?.users[state.room.socketId ?? ''].avatar)
+
+  const currentOpen = params.open ?? storeOpen
+  const currentAvatar = params.value ?? storeAvatar
 
   const windowDimensions = useElementDimensions()
 
   const { avatarsArr } = useAvatars()
 
-  const [selectedIndex, setSelectedIndex] = useState(avatarsArr.findIndex(imageData => imageData.imageId === currentUserAvatar?.path))
+  const [selectedIndex, setSelectedIndex] = useState(avatarsArr.findIndex(imageData => imageData.imageId === currentAvatar?.path))
 
   const cardImageDimensions = useMemo(() => {
     const baseDimensions = {
@@ -72,7 +86,15 @@ export function AvatarSelector() {
     setSelectedIndex(originalImageIndex)
   }
 
-  function selectAvatar(imageId: string) {
+  function closeSelector() {
+    if (params.onClose) {
+      params.onClose()
+    } else {
+      dispatch(roomSlice.toggleAvatarSelector())
+    }
+  }
+
+  function storeSelectAvatar(imageId: string) {
     dispatch(roomSlice.updateAvatar({
       avatar: {
         path: imageId,
@@ -80,13 +102,24 @@ export function AvatarSelector() {
       },
     }))
 
-    dispatch(roomSlice.toggleAvatarSelector())
+    closeSelector()
+  }
+
+  function selectAvatar(imageId: string) {
+    if (params.onSelect) {
+      params.onSelect({
+        path: imageId,
+        type: 'internal_photo',
+      })
+    } else {
+      storeSelectAvatar(imageId)
+    }
   }
 
   return (
     <Overlay
-      active={showAvatarSelector}
-      closeOverlay={() => dispatch(roomSlice.toggleAvatarSelector())}
+      active={currentOpen}
+      closeOverlay={closeSelector}
     >
       <StyledCardsList>
         {
@@ -102,6 +135,7 @@ export function AvatarSelector() {
                 className={imageData.selected ? 'card-image--selected' : ''}
                 $width={cardImageDimensions.width}
                 $imageUrl={imageData.imagePath}
+                type='button'
                 onClick={(e) => {
                   e.stopPropagation()
                   setIndex(imageData.originalIndex)

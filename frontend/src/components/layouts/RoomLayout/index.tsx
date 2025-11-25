@@ -24,7 +24,7 @@ export function RoomLayout({ children, sidebarContent, sidebarTitle }: RoomLayou
   const windowDimensions = useElementDimensions()
 
   const finalSectionWidth = useMemo(() => {
-    if (windowDimensions && windowDimensions.width < 960) {
+    if (windowDimensions && windowDimensions.width <= 960) {
       return '100%'
     }
 
