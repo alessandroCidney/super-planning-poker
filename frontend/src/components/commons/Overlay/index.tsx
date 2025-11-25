@@ -45,9 +45,6 @@ export function Overlay({ active, children, closeOverlay }: OverlayProps) {
               opacity: 0,
             }}
             tabIndex={0}
-            onFocus={() => {
-              console.log('focused')
-            }}
             onClick={closeOverlay}
           >
             { children }

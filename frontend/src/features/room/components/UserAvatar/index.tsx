@@ -16,8 +16,6 @@ export function UserAvatar({ imageId, size }: UserAvatarProps) {
 
   const [loadedPhoto, setLoadedPhoto] = useState('')
 
-  console.log('render')
-
   useEffect(() => {
     async function loadPhoto() {
       const importedImage = await import(`@/assets/images/pixelarts/${selectedAvatar}.png`)

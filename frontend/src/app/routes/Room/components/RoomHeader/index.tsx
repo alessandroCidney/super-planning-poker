@@ -1,4 +1,4 @@
-import { BsLayoutSidebarInsetReverse } from 'react-icons/bs'
+import { BsLayoutSidebarInsetReverse, BsPersonFillAdd } from 'react-icons/bs'
 
 import textAppLogo from '@/assets/images/logos/text-app-logo.svg'
 import iconAppLogo from '@/assets/images/logos/icon-app-logo.svg'
@@ -46,7 +46,14 @@ export function RoomHeader() {
       {
         !!roomSelector.currentRoom && (
           <div>
-            {/* <AvatarSelector /> */}
+            <DefaultButton
+              color='rgb(4, 150, 255, .1)'
+              textColor='var(--theme-primary-darken-2-color)'
+              hoverColor='var(--theme-primary-color)'
+              prependIcon={<BsPersonFillAdd size={25} />}
+            >
+              Convidar
+            </DefaultButton>
 
             <UserMenu />
 

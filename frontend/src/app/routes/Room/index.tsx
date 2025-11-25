@@ -159,8 +159,6 @@ export function Room() {
     return classNameArr.join(' ')
   }, [votingStatus])
 
-  console.log('render room page')
-
   useEffect(() => {
     if (!roomSelector.currentRoom) {
       navigate({

@@ -1,4 +1,5 @@
 # (IN PROGRESS)
 
-// TODO: Add avatar selector on initial screen
 // TODO: Move room code copy button to header
+// TODO: Fix small avatar with border image render (on RoomTable)
+// TODO: Handle with sidebar blur event on mobile
