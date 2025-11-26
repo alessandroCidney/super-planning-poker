@@ -13,6 +13,10 @@ export const Form = styled.form`
   border: 3px solid #fff;
 
   border-radius: 50px;
+
+  p {
+    margin-bottom: 20px;
+  }
 `
 
 export const FormField = styled.label`

@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 import { HomeLayout } from '@/components/layouts/HomeLayout'
+import { Chip } from '@/components/commons/Chip'
 
 import { ErrorMessageWrapper } from '@/features/forms/components/ErrorMessageWrapper'
 import { useNotifications } from '@/features/notifications/hooks/useNotifications'
@@ -22,6 +23,8 @@ import { LocalAvatarSelector } from './components/LocalAvatarSelector'
 
 import { Form, FormField, FieldTitle, FieldInput, FormBreak, FormActions } from './styles'
 
+let loadedOnce = false
+
 export function Home() {
   const navigate = useNavigate()
 
@@ -35,7 +38,7 @@ export function Home() {
   const notifications = useNotifications()
 
   const roomCodeFieldControls = useFormRules({
-    initialValue: '',
+    initialValue: searchParams.get('room') ?? '',
     selectedRules: [
       allFormRules.requiredString,
       allFormRules.maxLength(36),
@@ -100,6 +103,14 @@ export function Home() {
     }
   }
 
+  const clearForm = useCallback(() => {
+    setSearchParams({})
+    setFormStep('room')
+
+    nameFieldControls.setValue('')
+    roomCodeFieldControls.setValue('')
+  }, [nameFieldControls, roomCodeFieldControls, setSearchParams])
+
   const checkIfRoomExists = useCallback(async (roomId: string) => {
     try {
       await api.get(`/rooms/${roomId}`)
@@ -115,20 +126,18 @@ export function Home() {
   }, [])
 
   const urlRoomCheck = useCallback(async () => {
-    const urlRoomId = searchParams.get('room')
+    const preSelectedRoomId = roomCodeFieldControls.value
 
-    if (urlRoomId) {
-      const roomExists = await checkIfRoomExists(urlRoomId)
+    if (preSelectedRoomId) {
+      const roomExists = await checkIfRoomExists(preSelectedRoomId)
 
       if (roomExists) {
-        const roomIdValidationResult = roomCodeFieldControls.validate(urlRoomId)
+        const roomIdValidationResult = roomCodeFieldControls.validate(preSelectedRoomId)
 
         if (roomIdValidationResult.valid) {
-          roomCodeFieldControls.setValue(urlRoomId)
-
           setFormStep('user')
         } else {
-          roomCodeFieldControls.setValue('')
+          clearForm()
 
           setFormStep('room')
         }
@@ -136,19 +145,13 @@ export function Home() {
         notifications.showMessage({
           title: 'Sala não encontrada!',
           description: 'A sala não existe ou foi removida.',
-          type: 'info',
+          type: 'error',
         })
 
-        roomCodeFieldControls.setValue('')
-
-        setSearchParams({})
-
-        setFormStep('room')
-          
-        return
+        clearForm()
       }
     }
-  }, [checkIfRoomExists, notifications, roomCodeFieldControls, searchParams, setSearchParams])
+  }, [checkIfRoomExists, clearForm, notifications, roomCodeFieldControls])
   
   useEffect(() => {
     if (roomSelector.currentRoom) {
@@ -157,7 +160,10 @@ export function Home() {
       return
     }
 
-    urlRoomCheck()
+    if (!loadedOnce) {
+      loadedOnce = true
+      urlRoomCheck()
+    }
   }, [urlRoomCheck, navigate, roomSelector.currentRoom])
 
   return (
@@ -219,7 +225,22 @@ export function Home() {
               <p>
                 {
                   roomCodeFieldControls.value
-                    ? <>Entrando na sala { roomCodeFieldControls.value }</>
+                    ? (
+                      <>
+                        <span>
+                          Entrando na sala
+                        </span>
+
+                        &nbsp;
+
+                        <Chip
+                          color='var(--theme-primary-darken-2-color)'
+                          textColor='#fff'
+                        >
+                          { roomCodeFieldControls.value }
+                        </Chip>
+                      </>
+                    )
                     : <>Criando nova sala</>
                 }
               </p>
@@ -261,7 +282,7 @@ export function Home() {
                   hoverColor='var(--theme-primary-lighten-1-color)'
                   block
                   type='button'
-                  onClick={() => setFormStep('room')}
+                  onClick={clearForm}
                 >
                   Voltar
                 </DefaultButton>

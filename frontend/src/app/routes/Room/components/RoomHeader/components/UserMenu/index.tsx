@@ -24,6 +24,10 @@ export function UserMenu() {
     && !!roomSelector.socketId
     && roomSelector.currentRoom.ownerIds.includes(roomSelector.socketId)
 
+  function signOut() {
+    window.location.href = window.location.origin
+  }
+
   return (
     <FloatingMenu
       activator={<UserAvatar />}
@@ -38,9 +42,11 @@ export function UserMenu() {
             { currentUser?.name }
           </div>
 
-          <Chip>
-            { isRoomOwner ? 'Dono da Sala' : 'Convidado' }
-          </Chip>
+          <div>
+            <Chip>
+              { isRoomOwner ? 'Dono da Sala' : 'Convidado' }
+            </Chip>
+          </div>
         </div>
       </StyledUserInfoContainer>
 
@@ -65,7 +71,7 @@ export function UserMenu() {
         prependIcon={<BsArrowLeft size={20} />}
         block
         list
-        onClick={() => dispatch(roomSlice.leaveRoom())}
+        onClick={signOut}
       >
         Sair
       </DefaultButton>

@@ -5,7 +5,7 @@ interface StyledContainerProps {
   $color?: string
 }
 
-export const StyledContainer = styled.div<StyledContainerProps>`
+export const StyledContainer = styled.span<StyledContainerProps>`
   display: inline;
 
   padding: 5px 10px;

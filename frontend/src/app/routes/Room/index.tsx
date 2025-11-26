@@ -159,13 +159,13 @@ export function Room() {
   }, [votingStatus])
 
   useEffect(() => {
-    if (!roomSelector.currentRoom) {
+    if (!roomSelector.currentRoom && !roomSelector.socketId) {
       navigate({
         pathname: '/',
         search: `?room=${roomId}`,
       })
     }
-  }, [navigate, roomId, roomSelector.currentRoom])
+  }, [navigate, roomId, roomSelector.currentRoom, roomSelector.socketId])
 
   return (
     <RoomLayout
