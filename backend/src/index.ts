@@ -31,7 +31,9 @@ app.get('/', (req, res) => {
 })
 
 app.get('/rooms', (req, res) => {
-  res.status(200).json(onlineRooms)
+  res.status(200).json({
+    totalRooms: Object.keys(onlineRooms).length,
+  })
 })
 
 app.get('/rooms/:id', (req, res) => {
