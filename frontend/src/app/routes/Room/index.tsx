@@ -14,7 +14,6 @@ import { Overlay } from '@/components/commons/Overlay'
 
 import { generateQuadraticEquation } from '@/utils/calc'
 
-import { RoomCodeCopyButton } from './components/RoomCodeCopyButton'
 import { RoomSidebar } from './components/RoomSidebar'
 import { RoomHeader } from './components/RoomHeader'
 import { RoomTable } from './components/RoomTable'
@@ -216,15 +215,13 @@ export function Room() {
         }
       </StyledCardsContainer>
 
-      <RoomCodeCopyButton />
-
       <FloatingVotingChip />
 
       <AvatarSelector />
 
       <Overlay
-        active={showVoteConfirmation}
-        closeOverlay={() => {}}
+        value={showVoteConfirmation}
+        setValue={setShowVoteConfirmation}
       >
         <StyledCardOverlayContent>
           <h1>

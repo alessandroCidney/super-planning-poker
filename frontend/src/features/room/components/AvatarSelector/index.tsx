@@ -118,8 +118,8 @@ export function AvatarSelector(params: AvatarSelectorProps) {
 
   return (
     <Overlay
-      active={currentOpen}
-      closeOverlay={closeSelector}
+      value={currentOpen}
+      setValue={(newValue) => !newValue && closeSelector()}
     >
       <StyledCardsList>
         {

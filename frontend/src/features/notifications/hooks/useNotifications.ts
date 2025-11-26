@@ -1,12 +1,14 @@
+import { useCallback } from 'react'
+
 import type { Dispatch, UnknownAction } from '@reduxjs/toolkit'
 
 import { v4 as uuidV4 } from 'uuid'
 
-import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
+import { useAppDispatch, useAppStore } from '@/app/storeHooks'
 
 import * as notificationsSlice from '../notificationsSlice'
 
-import { waitFor, wait } from '@/utils/time'
+import { wait } from '@/utils/time'
 
 /*
   Some code parts, like websocket handlers, cannot use react hooks because they are inside Redux middlewares.
@@ -18,7 +20,8 @@ export async function showMessageWithDelay(
   payload: Omit<notificationsSlice.NotificationsState, 'active'>,
 ) {
   if (getStoreNotificationsData().active) {
-    await waitFor(() => !getStoreNotificationsData().active)
+    await wait(1000)
+    dispatch(notificationsSlice.hideMessage())
     await wait(100)
   }
 
@@ -37,13 +40,20 @@ export async function showMessageWithDelay(
   }, 5000)
 }
 
+/*
+  It was necessary to use the "useStore" hook instead of "useSelector"
+  because the values in the Redux store are updated during the method's execution,
+  and this method always needs the most recent value.
+*/
+
 export function useNotifications() {
   const dispatch = useAppDispatch()
-  const currentNotificationsData = useAppSelector(state => state.notifications)
 
-  async function showMessage(payload: Omit<notificationsSlice.NotificationsState, 'active'>) {
-    await showMessageWithDelay(() => currentNotificationsData, dispatch, payload)
-  }
+  const store = useAppStore()
+
+  const showMessage = useCallback(async (payload: Omit<notificationsSlice.NotificationsState, 'active'>) => {
+    await showMessageWithDelay(() => store.getState().notifications, dispatch, payload)
+  }, [dispatch, store])
 
   return {
     showMessage,

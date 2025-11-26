@@ -25,8 +25,8 @@ export function VotingConcludedAlert() {
   return votingResult ?
     (
       <Overlay
-        active={roomSelector.showVotingConcludedAlert}
-        closeOverlay={() => dispatch(roomSlice.closeVotingConcludedAlert())}
+        value={roomSelector.showVotingConcludedAlert}
+        setValue={(newValue) => !newValue && dispatch(roomSlice.closeVotingConcludedAlert())}
       >
         <StyledDialog
           role='dialog'

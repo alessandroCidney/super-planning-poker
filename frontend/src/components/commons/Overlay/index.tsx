@@ -6,33 +6,32 @@ import { BsX } from 'react-icons/bs'
 import { StyledCloseButton, StyledOverlay } from './styles'
 
 interface OverlayProps {
-  active: boolean
-
-  closeOverlay: () => void
+  value: boolean
+  setValue: (newValue: boolean) => void
   
   children: ReactNode
 }
 
-export function Overlay({ active, children, closeOverlay }: OverlayProps) {
+export function Overlay({ children, value, setValue }: OverlayProps) {
   const [focused, setFocused] = useState(false)
 
   const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (active && !focused) {
+    if (value && !focused) {
       overlayRef.current?.focus()
       setFocused(true)
     }
 
-    if (!active) {
+    if (!value) {
       setFocused(false)
     }
-  }, [active, focused])
+  }, [value, focused])
 
   return (
     <AnimatePresence>
       {
-        active && (
+        value && (
           <StyledOverlay
             ref={overlayRef}
             initial={{
@@ -45,7 +44,7 @@ export function Overlay({ active, children, closeOverlay }: OverlayProps) {
               opacity: 0,
             }}
             tabIndex={0}
-            onClick={closeOverlay}
+            onClick={() => setValue(false)}
           >
             { children }
 
@@ -55,7 +54,7 @@ export function Overlay({ active, children, closeOverlay }: OverlayProps) {
               icon
               onClick={(e) => {
                 e.stopPropagation()
-                closeOverlay()
+                setValue(false)
               }}
             >
               <BsX size={25} />

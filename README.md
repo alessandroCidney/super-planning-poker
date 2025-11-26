@@ -1,5 +1,5 @@
 # (IN PROGRESS)
 
-// TODO: Move room code copy button to header
 // TODO: Fix small avatar with border image render (on RoomTable)
-// TODO: Handle with sidebar blur event on mobile
+// TODO: Fix error: Cannot use back button on Home after access a link with room parameter
+// TODO: Fix error: Wrong logo size during page render
