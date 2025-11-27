@@ -11,8 +11,6 @@ export function LinearLoading({ complete }: LinearLoadingProps) {
 
   const estimatedTime = 60 * 1000
 
-  console.log('render loading')
-
   const startInterval = useCallback(() => {
     const intervalId = window.setInterval(() => {
       if (progress < 100 && progress % 10 === 0) {
@@ -26,20 +24,14 @@ export function LinearLoading({ complete }: LinearLoadingProps) {
   }, [estimatedTime, progress])
 
   useEffect(() => {
-    console.log('load use effect')
-
     const intervalId = startInterval()
 
     if (complete) {
-      console.log('complete')
-
       clearInterval(intervalId)
       setProgress(100)
     }
 
     return () => {
-      console.log('unmount')
-
       clearInterval(intervalId)
     }
   }, [complete, startInterval])

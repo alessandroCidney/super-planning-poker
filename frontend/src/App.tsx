@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router'
 import { Home } from './app/routes/Home'
 import { Room } from './app/routes/Room'
 import { Error404 } from './app/routes/Error404'
-import { TestPage } from './app/routes/Test'
+
 import { HealthCheckLayout } from './components/layouts/HealthCheckLayout'
 
 function App() {
@@ -13,8 +13,6 @@ function App() {
         <Route index element={<Home />} />
 
         <Route path='rooms/:roomId' element={<Room />} />
-
-        <Route path='test' element={<TestPage />} />
 
         <Route path='*' element={<Error404 />} />
       </Routes>
