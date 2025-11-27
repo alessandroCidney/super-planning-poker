@@ -7,10 +7,13 @@ import * as roomSlice from '@/features/room/roomSlice'
 import { VotingConcludedAlert } from '@/features/room/components/VotingConcludedAlert'
 import { useVoting } from '@/features/room/hooks/useVoting'
 import { FloatingVotingChip } from '@/features/room/components/FloatingVotingChip'
+import { AvatarSelector } from '@/features/room/components/AvatarSelector'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 import { RoomLayout } from '@/components/layouts/RoomLayout'
 import { Overlay } from '@/components/commons/Overlay'
+
+import { useElementDimensions } from '@/hooks/useElementDimensions'
 
 import { generateQuadraticEquation } from '@/utils/calc'
 
@@ -20,7 +23,6 @@ import { RoomTable } from './components/RoomTable'
 import { PokerCard } from './components/PokerCard'
 
 import { StyledCardOverlayActions, StyledCardOverlayContent, StyledCardsContainer, StyledPokerCard } from './styles'
-import { AvatarSelector } from '@/features/room/components/AvatarSelector'
 
 export function Room() {
   const navigate = useNavigate()
@@ -34,6 +36,10 @@ export function Room() {
   const [hoveringCards, setHoveringCards] = useState(false)
   const [showVoteConfirmation, setShowVoteConfirmation] = useState(false)
   const [voteConfirmationPayload, setVoteConfirmationPayload] = useState(0)
+
+  const windowDimensions = useElementDimensions()
+  
+  const isMobile = windowDimensions && windowDimensions.width <= 960
 
   const cardWidth = 120
 
@@ -119,7 +125,9 @@ export function Room() {
       // translate X calculations
       const translateXBaseValue = (itemIndex - centralIndex) * cardWidth
 
-      const translateXStep = hoveringCards ? 30 : 90
+      const openCardsDeck = (hoveringCards || isMobile && votingStatus === 'in_progress')
+
+      const translateXStep = openCardsDeck ? 30 : 90
 
       const finalTranslateX = translateXBaseValue + translateXStep * (centralIndex - itemIndex)
 
@@ -129,7 +137,7 @@ export function Room() {
       const finalTranslateY = translateYQuadraticEquation(finalTranslateX)
 
       // rotate calculations
-      const rotateStep = hoveringCards ? 5 : 2
+      const rotateStep = openCardsDeck ? 5 : 2
 
       const finalRotate = rotateStep * (itemIndex - centralIndex)
 
@@ -142,7 +150,7 @@ export function Room() {
     })
 
     return updatedCards
-  }, [hoveringCards])
+  }, [hoveringCards, isMobile, votingStatus])
 
   const cardsContainerClassName = useMemo(() => {
     const classNameArr = []

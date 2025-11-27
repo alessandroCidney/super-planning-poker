@@ -38,10 +38,6 @@ export const setupSocketMiddleware: Middleware<{}, RootState> = (store) => {
           payload: connectedSocket.id,
         })
 
-        connectedSocket.onAny((eventName, ...args) => {
-          console.log('catch all', eventName, ...args)
-        })
-
         setupStoryListeners(connectedSocket, store)
 
         resolve(connectedSocket)

@@ -3,7 +3,7 @@ import type { HTMLMotionProps } from 'motion/react'
 import { StyledButton } from './styles'
 
 interface PokerCardProps extends HTMLMotionProps<'button'> {
-  cardValue: number
+  cardValue: number | string
   width?: string
   color?: string
 }

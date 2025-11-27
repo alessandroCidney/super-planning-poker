@@ -10,9 +10,16 @@ import { setupRoomEvents } from './handlers/roomHandler'
 import { setupStoryEvents } from './handlers/storyHandler'
 import { setupUserEvents } from './handlers/userHandler'
 
+if (!process.env.WEBSITE_URL) {
+  throw new Error('Please set the WEBSITE_URL environment variable')
+}
+
 const app = express()
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.WEBSITE_URL,
+}))
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -20,7 +27,7 @@ const httpServer = createServer(app)
 
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:3000'],
+    origin: [process.env.WEBSITE_URL],
   },
 })
 
@@ -31,7 +38,9 @@ app.get('/', (req, res) => {
 })
 
 app.get('/rooms', (req, res) => {
-  res.status(200).json(onlineRooms)
+  res.status(200).json({
+    totalRooms: Object.keys(onlineRooms).length,
+  })
 })
 
 app.get('/rooms/:id', (req, res) => {
@@ -56,6 +65,6 @@ io.on('connection', (socket) => {
   setupUserEvents(io, socket)
 })
 
-httpServer.listen(process.env.PORT, () => {
+httpServer.listen(process.env.PORT || 8080, () => {
   console.log(`Listening at port ${process.env.PORT}`)
 })
