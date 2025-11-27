@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./frontend
+    working-directory: ./backend
 
 jobs:
   # Build is done in Render enviroment
