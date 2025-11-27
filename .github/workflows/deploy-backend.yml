@@ -15,6 +15,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
       - name: Deploy
         env:
           deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
