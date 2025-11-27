@@ -11,10 +11,16 @@ interface ButtonProps {
   $iconSize?: string
 }
 
+export const StyledButtonLoading = styled.img`
+  display: none;
+`
+
 export const StyledButton = styled.button<ButtonProps>`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  position: relative;
 
   height: 50px;
   min-width: ${props => props.$minWidth || 'auto'};
@@ -89,5 +95,30 @@ export const StyledButton = styled.button<ButtonProps>`
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none;
+  }
+
+  &.default-button--loading {
+    pointer-events: none;
+
+    // prevent copy text
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+
+    ${StyledButtonLoading} {
+      display: block;
+
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    *:not(${StyledButtonLoading}) {
+      opacity: 0;
+    }
   }
 `

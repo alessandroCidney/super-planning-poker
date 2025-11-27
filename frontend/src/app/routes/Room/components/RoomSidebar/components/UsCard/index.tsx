@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 
 import { BsFillTrash3Fill, BsArrowCounterclockwise } from 'react-icons/bs'
 import type { HTMLMotionProps } from 'motion/react'
@@ -7,7 +7,9 @@ import { useAppSelector } from '@/app/storeHooks'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 
+import { useWebSocketActions } from '@/features/websocket/hooks/useWebSocketActions'
 import { useVoting } from '@/features/room/hooks/useVoting'
+import * as roomSlice from '@/features/room/roomSlice'
 
 import type { Story } from '@/types/stories'
 
@@ -16,22 +18,12 @@ import { StyledCardActions, StyledCardContainer, StyledHeader, StyledVotingResul
 interface UsCardProps extends HTMLMotionProps<'article'> {
   storyData: Story
 
-  startVoting: (storyId: string) => void | Promise<void>
-  concludeVoting: (storyId: string) => void | Promise<void>
-  restartVoting: (storyId: string) => void | Promise<void>
-  removeStory: (storyId: string) => void | Promise<void>
-
   width?: string
   className?: string
 }
 
 export function UsCard({
   storyData,
-  
-  startVoting,
-  concludeVoting,
-  restartVoting,
-  removeStory,
   
   width,
   className = '',
@@ -45,6 +37,16 @@ export function UsCard({
     && roomSelector.currentRoom.ownerIds.includes(roomSelector.socketId)
 
   const { getVotingResult, votingStory } = useVoting()
+  const webSocketActions = useWebSocketActions()
+
+  const [loading, setLoading] = useState({
+    removeStory: false,
+    startVoting: false,
+    concludeVoting: false,
+    restartVoting: false,
+  })
+
+  const somethingIsLoading = Object.values(loading).some(bool => bool)
 
   const votingResult = useMemo(() => getVotingResult(storyData), [getVotingResult, storyData])
 
@@ -62,6 +64,38 @@ export function UsCard({
 
     return classNameArr.join(' ')
   }, [className, storyData.votingStatus])
+  
+  async function removeStory(storyId: string) {
+    setLoading({ ...loading, removeStory: true })
+
+    await webSocketActions.callActionAndWait(roomSlice.removeStory, { storyId })
+
+    setLoading({ ...loading, removeStory: false })
+  }
+
+  async function startVoting(storyId: string) {
+    setLoading({ ...loading, startVoting: true })
+
+    await webSocketActions.callActionAndWait(roomSlice.startVoting, { storyId })
+
+    setLoading({ ...loading, startVoting: false })
+  }
+
+  async function concludeVoting(storyId: string) {
+    setLoading({ ...loading, concludeVoting: true })
+
+    await webSocketActions.callActionAndWait(roomSlice.concludeVoting, { storyId })
+
+    setLoading({ ...loading, concludeVoting: false })
+  }
+
+  async function restartVoting(storyId: string) {
+    setLoading({ ...loading, restartVoting: true })
+
+    await webSocketActions.callActionAndWait(roomSlice.restartVoting, { storyId })
+
+    setLoading({ ...loading, restartVoting: false })
+  }
 
   interface AnimatedContainerProps {
     children: ReactNode
@@ -91,7 +125,8 @@ export function UsCard({
 
         <StyledCardActions>
           <DefaultButton
-            disabled={anotherStoryIsInVoting || !isRoomOwner}
+            loading={loading.startVoting}
+            disabled={anotherStoryIsInVoting || !isRoomOwner || (somethingIsLoading && !loading.startVoting)}
             color='var(--theme-primary-lighten-2-color)'
             onClick={() => startVoting(storyData._id)}
           >
@@ -99,7 +134,8 @@ export function UsCard({
           </DefaultButton>
 
           <DefaultButton
-            disabled={!isRoomOwner}
+            loading={loading.removeStory}
+            disabled={!isRoomOwner || (somethingIsLoading && !loading.removeStory)}
             color='var(--theme-primary-lighten-2-color)'
             icon
             onClick={() => removeStory(storyData._id)}
@@ -122,7 +158,8 @@ export function UsCard({
 
         <StyledCardActions>
           <DefaultButton
-            disabled={!isRoomOwner}
+            loading={loading.concludeVoting}
+            disabled={!isRoomOwner || (somethingIsLoading && !loading.concludeVoting)}
             color='var(--theme-primary-lighten-2-color)'
             onClick={() => concludeVoting(storyData._id)}
           >
@@ -156,7 +193,8 @@ export function UsCard({
 
         <StyledCardRightActions>
           <DefaultButton
-            disabled={anotherStoryIsInVoting || !isRoomOwner}
+            loading={loading.restartVoting}
+            disabled={anotherStoryIsInVoting || !isRoomOwner || (somethingIsLoading && !loading.restartVoting)}
             color='var(--theme-primary-lighten-2-color)'
             icon
             onClick={() => restartVoting(storyData._id)}
@@ -165,7 +203,8 @@ export function UsCard({
           </DefaultButton>
 
           <DefaultButton
-            disabled={!isRoomOwner}
+            loading={loading.removeStory}
+            disabled={!isRoomOwner || (somethingIsLoading && !loading.removeStory)}
             color='var(--theme-primary-lighten-2-color)'
             icon
             onClick={() => removeStory(storyData._id)}

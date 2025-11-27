@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 
-import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
+import { useAppSelector } from '@/app/storeHooks'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 
 import * as roomSlice from '@/features/room/roomSlice'
+import { useWebSocketActions } from '@/features/websocket/hooks/useWebSocketActions'
 
 import type { Story } from '@/types/stories'
 
@@ -14,36 +15,20 @@ import { UsForm } from './components/UsForm'
 import { StyledUsList, StyledContentContainer, StyledContentActions } from './styles'
 
 export function RoomSidebar() {
-  const dispatch = useAppDispatch()
-
   const roomSelector = useAppSelector(state => state.room)
 
   const isRoomOwner = !!roomSelector.currentRoom
     && !!roomSelector.socketId
     && roomSelector.currentRoom.ownerIds.includes(roomSelector.socketId)
 
+  const webSocketActions = useWebSocketActions()
+
   const [showForm, setShowForm] = useState(false)
 
-  function createStory(title: string) {
-    dispatch(roomSlice.createStory({ title }))
+  async function createStory(title: string) {
+    await webSocketActions.callActionAndWait(roomSlice.createStory, { title })
 
     setShowForm(false)
-  }
-
-  async function removeStory(storyId: string) {
-    dispatch(roomSlice.removeStory({ storyId }))
-  }
-
-  async function startVoting(storyId: string) {
-    dispatch(roomSlice.startVoting({ storyId }))
-  }
-
-  async function concludeVoting(storyId: string) {
-    dispatch(roomSlice.concludeVoting({ storyId }))
-  }
-
-  async function restartVoting(storyId: string) {
-    dispatch(roomSlice.restartVoting({ storyId }))
   }
 
   const orderedStoriesList = useMemo(() => {
@@ -93,10 +78,6 @@ export function RoomSidebar() {
             <UsCard
               key={storyData._id}
               storyData={storyData}
-              removeStory={removeStory}
-              startVoting={startVoting}
-              concludeVoting={concludeVoting}
-              restartVoting={restartVoting}
             />
           ))
         }

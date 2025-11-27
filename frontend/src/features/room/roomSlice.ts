@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, type PayloadAction, type WritableDraft } from '@reduxjs/toolkit'
 
 import type { Room } from '@/types/rooms'
 import type { User } from '@/types/users'
@@ -25,6 +25,8 @@ const initialState: RoomState = {
   showVotingConcludedAlert: false,
   votingConcludedStory: undefined,
 }
+
+type WebSocketActionParams<P> = [_state: WritableDraft<RoomState>, _state: PayloadAction<P & { messageId?: string }>]
 
 export const roomSlice = createSlice({
   name: 'room',
@@ -53,19 +55,26 @@ export const roomSlice = createSlice({
       state.showVotingConcludedAlert = false
     },
 
-    /* WebSocket Events */
-    createRoom: (_state, _action: PayloadAction<{ userData: Partial<User> }>) => {},
-    joinRoom: (_state, _action: PayloadAction<{ roomId: string, userData: Partial<User> }>) => {},
+    /*
+      Actions that call the websocket
 
-    createStory: (_state, _action: PayloadAction<{ title: string }>) => {},
-    removeStory: (_state, _action: PayloadAction<{ storyId: string }>) => {},
+      (The actions that call the websocket are not configured here, but rather in the Redux middleware.
+      Check the files in @/features/room/api)
 
-    startVoting: (_state, _action: PayloadAction<{ storyId: string }>) => {},
-    saveVote: (_state, _action: PayloadAction<{ storyId: string, voteValue: number }>) => {},
-    concludeVoting: (_state, _action: PayloadAction<{ storyId: string }>) => {},
-    restartVoting: (_state, _action: PayloadAction<{ storyId: string }>) => {},
+      When calling these actions, use the useWebSocketActions hook if you want to wait for completion.
+    */
+    createRoom: (..._rest: WebSocketActionParams<{ userData: Partial<User> }>) => {},
+    joinRoom: (..._rest: WebSocketActionParams<{ roomId: string, userData: Partial<User> }>) => {},
 
-    updateAvatar: (_state, _action: PayloadAction<{ avatar: User['avatar'] }>) => {},
+    createStory: (..._rest: WebSocketActionParams<{ title: string }>) => {},
+    removeStory: (..._rest: WebSocketActionParams<{ storyId: string }>) => {},
+
+    startVoting: (..._rest: WebSocketActionParams<{ storyId: string }>) => {},
+    concludeVoting: (..._rest: WebSocketActionParams<{ storyId: string }>) => {},
+    restartVoting: (..._rest: WebSocketActionParams<{ storyId: string }>) => {},
+    saveVote: (..._rest: WebSocketActionParams<{ storyId: string, voteValue: number }>) => {},
+
+    updateAvatar: (..._rest: WebSocketActionParams<{ avatar: User['avatar'] }>) => {},
   },
 })
 

@@ -16,7 +16,7 @@ const initialState: NotificationsState = {
   type: 'success',
 }
 
-export const notificationsSlide = createSlice({
+export const notificationsSlice = createSlice({
   name: 'notifications',
 
   initialState,
@@ -36,6 +36,6 @@ export const notificationsSlide = createSlice({
   },
 })
 
-export const { showMessage, hideMessage } = notificationsSlide.actions
+export const { showMessage, hideMessage } = notificationsSlice.actions
 
-export default notificationsSlide.reducer
+export default notificationsSlice.reducer

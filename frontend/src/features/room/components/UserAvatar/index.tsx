@@ -36,7 +36,7 @@ export function UserAvatar({ className, imageId, size, bordered, disabled }: Use
 
   useEffect(() => {
     async function loadPhoto() {
-      const importedImage = await import(`@/assets/images/pixelarts/${selectedAvatar}.png`)
+      const importedImage = await import(`@/assets/images/pixelarts/${selectedAvatar}.jpg`)
 
       setLoadedPhoto(importedImage.default)
     }

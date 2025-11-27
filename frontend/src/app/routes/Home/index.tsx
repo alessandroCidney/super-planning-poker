@@ -3,12 +3,13 @@ import { useNavigate, useSearchParams } from 'react-router'
 
 import { AxiosError } from 'axios'
 
-import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
+import { useAppSelector } from '@/app/storeHooks'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 import { HomeLayout } from '@/components/layouts/HomeLayout'
 import { Chip } from '@/components/commons/Chip'
 
+import { useWebSocketActions } from '@/features/websocket/hooks/useWebSocketActions'
 import { ErrorMessageWrapper } from '@/features/forms/components/ErrorMessageWrapper'
 import { useNotifications } from '@/features/notifications/hooks/useNotifications'
 import { allFormRules, useFormRules } from '@/features/forms/hooks/useFormRules'
@@ -28,14 +29,13 @@ let loadedOnce = false
 export function Home() {
   const navigate = useNavigate()
 
-  const dispatch = useAppDispatch()
-
   const roomSelector = useAppSelector(state => state.room)
 
   const [searchParams, setSearchParams] = useSearchParams()
 
   const { getRandomAvatar } = useAvatars()
   const notifications = useNotifications()
+  const webSocketActions = useWebSocketActions()
 
   const roomCodeFieldControls = useFormRules({
     initialValue: searchParams.get('room') ?? '',
@@ -61,6 +61,11 @@ export function Home() {
   
   const [formStep, setFormStep] = useState<'room' | 'user'>('room')
 
+  const [loading, setLoading] = useState({
+    createRoom: false,
+    joinRoom: false,
+  })
+
   async function handleStartJoinRoom() {
     const validationResult = roomCodeFieldControls.validate()
 
@@ -84,22 +89,30 @@ export function Home() {
     }
 
     if (roomCodeFieldControls.value) {
-      dispatch(roomSlice.joinRoom({
+      setLoading({ ...loading, joinRoom: true })
+
+      await webSocketActions.callActionAndWait(roomSlice.joinRoom, {
         roomId: roomCodeFieldControls.value,
         userData: {
           name: nameFieldControls.value,
 
           avatar: selectedAvatar,
         },
-      }))
+      })
+
+      setLoading({ ...loading, joinRoom: false })
     } else {
-      dispatch(roomSlice.createRoom({
+      setLoading({ ...loading, createRoom: true })
+
+      await webSocketActions.callActionAndWait(roomSlice.createRoom, {
         userData: {
           name: nameFieldControls.value,
 
           avatar: selectedAvatar,
         },
-      }))
+      })
+
+      setLoading({ ...loading, createRoom: false })
     }
   }
 
@@ -269,6 +282,7 @@ export function Home() {
 
               <FormActions>
                 <DefaultButton
+                  loading={loading.createRoom || loading.joinRoom}
                   color='var(--theme-primary-darken-2-color)'
                   hoverColor='var(--theme-primary-darken-3-color)'
                   block
@@ -278,6 +292,7 @@ export function Home() {
                 </DefaultButton>
 
                 <DefaultButton
+                  disabled={loading.createRoom || loading.joinRoom}
                   color='var(--theme-primary-lighten-2-color)'
                   hoverColor='var(--theme-primary-lighten-1-color)'
                   block

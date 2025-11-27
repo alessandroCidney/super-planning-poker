@@ -5,11 +5,13 @@ import { setupSocketMiddleware } from '@/features/room/api'
 import sidebarReducer from '../features/sidebar/sidebarSlice'
 import notificationsReducer from '../features/notifications/notificationsSlice'
 import roomReducer from '../features/room/roomSlice'
+import websocketReducer from '../features/websocket/websocketSlice'
 
 const rootReducer = combineReducers({
   sidebar: sidebarReducer,
   notifications: notificationsReducer,
   room: roomReducer,
+  websocket: websocketReducer,
 })
 
 export const store = configureStore({

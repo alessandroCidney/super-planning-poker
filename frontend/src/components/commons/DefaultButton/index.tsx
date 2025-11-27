@@ -2,7 +2,9 @@ import React, { useMemo, type ReactNode } from 'react'
 
 import { Link } from 'react-router'
 
-import { StyledButton } from './styles'
+import loadingCircleSvg from '@/assets/images/vectors/loading-circle.svg'
+
+import { StyledButton, StyledButtonLoading } from './styles'
 
 export type CustomButtonProperties = {
   color?: string
@@ -18,6 +20,7 @@ export type CustomButtonProperties = {
   list?: boolean
   disabled?: boolean
   readonly?: boolean
+  loading?: boolean
   anchor?: boolean
 
   prependIcon?: ReactNode
@@ -52,6 +55,7 @@ export function DefaultButton({
   list,
   disabled,
   readonly,
+  loading,
   anchor,
   
   prependIcon,
@@ -82,14 +86,18 @@ export function DefaultButton({
       if (disabled) {
         customClassesArr.push('default-button--disabled')
       }
+
+      if (loading) {
+        customClassesArr.push('default-button--loading')
+      }
   
-      if (readonly) {
+      if (readonly || loading) {
         customClassesArr.push('default-button--readonly')
       }
   
       return `${customClassesArr.join(' ')} ${className}`
     },
-    [block, icon, list, prependIcon, disabled, readonly, className],
+    [className, block, icon, list, prependIcon, disabled, readonly, loading],
   )
 
   const baseProperties = {
@@ -107,9 +115,18 @@ export function DefaultButton({
       <>
         { prependIcon }
 
-        { children }
+        {
+          icon
+            ? children
+            : <span>{ children }</span>
+        }
 
         { appendIcon }
+
+        <StyledButtonLoading
+          src={loadingCircleSvg}
+          width='30px'
+        />
       </>
     )
   }

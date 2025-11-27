@@ -6,9 +6,10 @@ import type { RootState } from '@/app/store'
 
 import * as roomSlice from '@/features/room/roomSlice'
 
-import type { User } from '@/types/users'
 import type { Room } from '@/types/rooms'
 import type { SocketResponse } from '@/types/socket'
+
+import { createWebSocketEventHandler } from '../utils/handlers'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type MiddlewareType = Middleware<{}, RootState>
@@ -22,12 +23,10 @@ export function setupRoomHandlers(
   emitMessage: <T>(type: string, payload: unknown) => Promise<SocketResponse<T>>,
 ) {
 
-  async function createRoom(userData: Partial<User>) {
+  const createRoom = createWebSocketEventHandler(store, async (payload: Parameters<typeof roomSlice['createRoom']>[0]) => {
     const socket = await makeSureIsConnected()
 
-    const response = await emitMessage<Room>('room:create', {
-      userData,
-    })
+    const response = await emitMessage<Room>('room:create', payload)
 
     store.dispatch({
       type: 'room/setCurrentRoom',
@@ -41,15 +40,12 @@ export function setupRoomHandlers(
     }
 
     socket.on('room:updated', updateRoom)
-  }
+  })
 
-  async function joinRoom(roomId: string, userData: Partial<User>) {
+  const joinRoom = createWebSocketEventHandler(store, async (payload: Parameters<typeof roomSlice['joinRoom']>[0]) => {
     const socket = await makeSureIsConnected()
 
-    const response = await emitMessage<Room>('room:join', {
-      roomId,
-      userData,
-    })
+    const response = await emitMessage<Room>('room:join', payload)
 
     store.dispatch({
       type: 'room/setCurrentRoom',
@@ -57,7 +53,7 @@ export function setupRoomHandlers(
     })
 
     socket.on('room:updated', updateRoom)
-  }
+  })
 
   function updateRoom(updatedRoom: Room) {
     store.dispatch({
@@ -70,7 +66,7 @@ export function setupRoomHandlers(
     case 'room/createRoom': {
       const actionPayload = action.payload as Parameters<typeof roomSlice['createRoom']>[0]
   
-      createRoom(actionPayload.userData)
+      createRoom(actionPayload)
   
       return { stopAction: true }
     }
@@ -78,7 +74,7 @@ export function setupRoomHandlers(
     case 'room/joinRoom': {
       const actionPayload = action.payload as Parameters<typeof roomSlice['joinRoom']>[0]
   
-      joinRoom(actionPayload.roomId, actionPayload.userData)
+      joinRoom(actionPayload)
   
       return { stopAction: true }
     }

@@ -11,6 +11,8 @@ import type { Room } from '@/types/rooms'
 import type { SocketResponse } from '@/types/socket'
 import type { Story } from '@/types/stories'
 
+import { createWebSocketEventHandler } from '../utils/handlers'
+
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type MiddlewareType = Middleware<{}, RootState>
 
@@ -22,12 +24,12 @@ export function setupStoryHandlers(
   makeSureRoomIsLoaded: () => Room,
   emitMessage: <T>(type: string, payload: unknown) => Promise<SocketResponse<T>>,
 ) {
-  async function createStory(title: string) {
+  const createStory = createWebSocketEventHandler(store, async (payload: Parameters<typeof roomSlice['createStory']>[0]) => {
     const currentRoom = makeSureRoomIsLoaded()
 
     await emitMessage<Story>('story:create', {
       roomId: currentRoom._id,
-      title,
+      ...payload,
     })
 
     showMessageWithDelay(
@@ -39,33 +41,32 @@ export function setupStoryHandlers(
         type: 'success',
       },
     )
-  }
+  })
 
-  async function removeStory(storyId: string) {
+  const removeStory = createWebSocketEventHandler(store, async (payload: Parameters<typeof roomSlice['removeStory']>[0]) => {
     const currentRoom = makeSureRoomIsLoaded()
 
     await emitMessage('story:remove', {
       roomId: currentRoom._id,
-      storyId,
+      ...payload,
     })
-  }
+  })
 
-  async function startVoting(storyId: string) {
+  const startVoting = createWebSocketEventHandler(store, async (payload: Parameters<typeof roomSlice['startVoting']>[0]) => {
     const currentRoom = makeSureRoomIsLoaded()
 
     await emitMessage('story:start-voting', {
       roomId: currentRoom._id,
-      storyId,
+      ...payload,
     })
-  }
+  })
 
-  async function saveVote(storyId: string, voteValue: number) {
+  const saveVote = createWebSocketEventHandler(store, async (payload: Parameters<typeof roomSlice['saveVote']>[0]) => {
     const currentRoom = makeSureRoomIsLoaded()
 
     await emitMessage('story:save-vote', {
       roomId: currentRoom._id,
-      storyId,
-      voteValue,
+      ...payload,
     })
 
     showMessageWithDelay(
@@ -77,31 +78,31 @@ export function setupStoryHandlers(
         type: 'success',
       },
     )
-  }
+  })
 
-  async function concludeVoting(storyId: string) {
+  const concludeVoting = createWebSocketEventHandler(store, async (payload: Parameters<typeof roomSlice['concludeVoting']>[0]) => {
     const currentRoom = makeSureRoomIsLoaded()
 
     await emitMessage('story:conclude-voting', {
       roomId: currentRoom._id,
-      storyId,
+      ...payload,
     })
-  }
+  })
 
-  async function restartVoting(storyId: string) {
+  const restartVoting = createWebSocketEventHandler(store, async (payload: Parameters<typeof roomSlice['restartVoting']>[0]) => {
     const currentRoom = makeSureRoomIsLoaded()
 
     await emitMessage('story:restart-voting', {
       roomId: currentRoom._id,
-      storyId,
+      ...payload,
     })
-  }
+  })
 
   switch (action.type) {
     case 'room/createStory': {
       const actionPayload = action.payload as Parameters<typeof roomSlice['createStory']>[0]
   
-      createStory(actionPayload.title)
+      createStory(actionPayload)
   
       return { stopAction: true }
     }
@@ -109,7 +110,7 @@ export function setupStoryHandlers(
     case 'room/removeStory': {
       const actionPayload = action.payload as Parameters<typeof roomSlice['removeStory']>[0]
   
-      removeStory(actionPayload.storyId)
+      removeStory(actionPayload)
   
       return { stopAction: true }
     }
@@ -117,7 +118,7 @@ export function setupStoryHandlers(
     case 'room/startVoting': {
       const actionPayload = action.payload as Parameters<typeof roomSlice['startVoting']>[0]
   
-      startVoting(actionPayload.storyId)
+      startVoting(actionPayload)
   
       return { stopAction: true }
     }
@@ -125,7 +126,7 @@ export function setupStoryHandlers(
     case 'room/saveVote': {
       const actionPayload = action.payload as Parameters<typeof roomSlice['saveVote']>[0]
   
-      saveVote(actionPayload.storyId, actionPayload.voteValue)
+      saveVote(actionPayload)
   
       return { stopAction: true }
     }
@@ -133,7 +134,7 @@ export function setupStoryHandlers(
     case 'room/concludeVoting': {
       const actionPayload = action.payload as Parameters<typeof roomSlice['concludeVoting']>[0]
   
-      concludeVoting(actionPayload.storyId)
+      concludeVoting(actionPayload)
   
       return { stopAction: true }
     }
@@ -141,7 +142,7 @@ export function setupStoryHandlers(
     case 'room/restartVoting': {
       const actionPayload = action.payload as Parameters<typeof roomSlice['restartVoting']>[0]
   
-      restartVoting(actionPayload.storyId)
+      restartVoting(actionPayload)
   
       return { stopAction: true }
     }

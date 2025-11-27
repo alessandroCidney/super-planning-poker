@@ -8,6 +8,7 @@ import { DefaultButton } from '@/components/commons/DefaultButton'
 import { Overlay } from '@/components/commons/Overlay'
 
 import * as roomSlice from '@/features/room/roomSlice'
+import { useWebSocketActions } from '@/features/websocket/hooks/useWebSocketActions'
 
 import { useElementDimensions } from '@/hooks/useElementDimensions'
 
@@ -36,6 +37,7 @@ export function AvatarSelector(params: AvatarSelectorProps) {
   const currentAvatar = params.value ?? storeAvatar
 
   const windowDimensions = useElementDimensions()
+  const webSocketActions = useWebSocketActions()
 
   const { avatarsArr } = useAvatars()
 
@@ -94,13 +96,13 @@ export function AvatarSelector(params: AvatarSelectorProps) {
     }
   }
 
-  function storeSelectAvatar(imageId: string) {
-    dispatch(roomSlice.updateAvatar({
+  async function storeSelectAvatar(imageId: string) {
+    webSocketActions.callActionAndWait(roomSlice.updateAvatar, {
       avatar: {
         path: imageId,
         type: 'internal_photo',
       },
-    }))
+    })
 
     closeSelector()
   }

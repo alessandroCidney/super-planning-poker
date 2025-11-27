@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 
-import { useAppDispatch, useAppSelector } from '@/app/storeHooks'
+import { useAppSelector } from '@/app/storeHooks'
 
 import * as roomSlice from '@/features/room/roomSlice'
 import { VotingConcludedAlert } from '@/features/room/components/VotingConcludedAlert'
 import { useVoting } from '@/features/room/hooks/useVoting'
 import { FloatingVotingChip } from '@/features/room/components/FloatingVotingChip'
 import { AvatarSelector } from '@/features/room/components/AvatarSelector'
+import { useWebSocketActions } from '@/features/websocket/hooks/useWebSocketActions'
 
 import { DefaultButton } from '@/components/commons/DefaultButton'
 import { RoomLayout } from '@/components/layouts/RoomLayout'
@@ -28,7 +29,6 @@ export function Room() {
   const navigate = useNavigate()
   const { roomId } = useParams()
 
-  const dispatch = useAppDispatch()
   const roomSelector = useAppSelector(state => state.room)
 
   const { votingStory } = useVoting()
@@ -36,8 +36,12 @@ export function Room() {
   const [hoveringCards, setHoveringCards] = useState(false)
   const [showVoteConfirmation, setShowVoteConfirmation] = useState(false)
   const [voteConfirmationPayload, setVoteConfirmationPayload] = useState(0)
+  const [loading, setLoading] = useState({
+    saveVote: false,
+  })
 
   const windowDimensions = useElementDimensions()
+  const webSocketActions = useWebSocketActions()
   
   const isMobile = windowDimensions && windowDimensions.width <= 960
 
@@ -48,19 +52,17 @@ export function Room() {
     setShowVoteConfirmation(true)
   }
 
-  function confirmVote() {
-    setShowVoteConfirmation(false)
-    saveVote(voteConfirmationPayload)
-  }
-
-  function saveVote(voteValue: number) {
+  async function saveVote() {
     if (votingStory) {
-      dispatch(
-        roomSlice.saveVote({
-          storyId: votingStory._id,
-          voteValue,
-        }),
-      )
+      setLoading({ ...loading, saveVote: true })
+
+      await webSocketActions.callActionAndWait(roomSlice.saveVote, {
+        storyId: votingStory._id,
+        voteValue: voteConfirmationPayload,
+      })
+
+      setLoading({ ...loading, saveVote: false })
+      setShowVoteConfirmation(false)
     }
   }
 
@@ -243,18 +245,20 @@ export function Room() {
 
           <StyledCardOverlayActions>
             <DefaultButton
+              loading={loading.saveVote}
               color='var(--theme-primary-darken-2-color)'
               hoverColor='var(--theme-primary-darken-3-color)'
               onClick={(e) => {
                 e.stopPropagation()
 
-                confirmVote()
+                saveVote()
               }}
             >
               Confirmar
             </DefaultButton>
 
             <DefaultButton
+              disabled={loading.saveVote}
               color='#f1f1f1'
               hoverColor=''
               textColor='#424a52'
