@@ -1,0 +1,25 @@
+name: Deploy Back-end to Render
+
+on:
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    working-directory: ./frontend
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build
+        run: |
+          yarn build
+
+      - name: Deploy
+        env:
+          deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          curl "$deploy_url"
