@@ -1,7 +1,7 @@
 # Super Planning Poker
 Super Planning Poker is a web application built with React, Vite, Node.js, Socket.IO, and Express. It can be used to estimate User Story points during Planning meetings, for example. The app provides a real-time voting system, story management features, and live communication between user groups using WebSocket to create virtual rooms.
 
-![Logo image](./assets/logo-banner.jpg)
+![Logo image](./assets/logos/logo-banner.jpg)
 
 ## Live Website
 You can access the website at <https://superplanningpoker.web.app>
@@ -32,16 +32,16 @@ yarn dev
 Below you can check out screenshots of the platform’s main features.
 
 ### Initial Screen
-![Initial screen image](./assets/initial-screen.png)
+![Initial screen image](./assets/screenshots/initial-screen.png)
 
 ### Name Selection Screen
-![Name selection screen image](./assets/choose-name.png)
+![Name selection screen image](./assets/screenshots/choose-name.png)
 
 ### Avatar Selection Screen
-![Avatar selection screen image](./assets/choose-avatar.png)
+![Avatar selection screen image](./assets/screenshots/choose-avatar.png)
 
 ### Room Screen
-![Room screen image](./assets/room-page.png)
+![Room screen image](./assets/screenshots/room-page.png)
 
 ### Voting Screen
-![Voting screen image](./assets/voting.png)
+![Voting screen image](./assets/screenshots/voting.png)
