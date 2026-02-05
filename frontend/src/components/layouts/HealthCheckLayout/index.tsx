@@ -40,11 +40,11 @@ export function HealthCheckLayout({ children }: HealthCheckLayoutProps) {
 
       await wait(500)
 
-      setCompleteLoading(true)
+      // setCompleteLoading(true)
 
       await wait(1000)
 
-      setShowChildren(true)
+      // setShowChildren(true)
     } catch (err) {
       setCompleteLoading(true)
       setFatalError(true)
@@ -165,8 +165,9 @@ export function HealthCheckLayout({ children }: HealthCheckLayoutProps) {
               y: 0,
             }}
           >
+            Este é um projeto pessoal mantido com recursos limitados.
             Para evitar consumo excessivo de recursos, nossos serviços entram em estado de sonolência após longa inatividade.
-            Por essa razão, o carregamento inicial após inatividade pode demorar até 1 minuto.
+            Por essa razão, o carregamento inicial após inatividade pode levar em torno de 1 minuto.
           </motion.p>
         )
       }
