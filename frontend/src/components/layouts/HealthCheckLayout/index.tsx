@@ -40,11 +40,11 @@ export function HealthCheckLayout({ children }: HealthCheckLayoutProps) {
 
       await wait(500)
 
-      // setCompleteLoading(true)
+      setCompleteLoading(true)
 
       await wait(1000)
 
-      // setShowChildren(true)
+      setShowChildren(true)
     } catch (err) {
       setCompleteLoading(true)
       setFatalError(true)
